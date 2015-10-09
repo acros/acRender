@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		228E7C041BB955AA0068B6C0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228E7C031BB955AA0068B6C0 /* main.cpp */; };
+		22D51ECF1BBC376B00FC315A /* Canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D51ECE1BBC376B00FC315A /* Canvas.cpp */; settings = {ASSET_TAGS = (); }; };
+		22D51ED21BBC380F00FC315A /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D51ED01BBC380F00FC315A /* Color.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,12 @@
 /* Begin PBXFileReference section */
 		228E7C001BB955AA0068B6C0 /* acRender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = acRender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		228E7C031BB955AA0068B6C0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		228E7C0A1BB9944A0068B6C0 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		22D51ECC1BBC0E0E00FC315A /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
+		22D51ECD1BBC2E9800FC315A /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Canvas.h; sourceTree = "<group>"; };
+		22D51ECE1BBC376B00FC315A /* Canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Canvas.cpp; sourceTree = "<group>"; };
+		22D51ED01BBC380F00FC315A /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
+		22D51ED11BBC380F00FC315A /* Color.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Color.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +65,23 @@
 		228E7C021BB955AA0068B6C0 /* acRender */ = {
 			isa = PBXGroup;
 			children = (
+				22D51ECA1BBC0D8F00FC315A /* SoftRenderer */,
 				228E7C031BB955AA0068B6C0 /* main.cpp */,
+				228E7C0A1BB9944A0068B6C0 /* main.h */,
 			);
 			path = acRender;
+			sourceTree = "<group>";
+		};
+		22D51ECA1BBC0D8F00FC315A /* SoftRenderer */ = {
+			isa = PBXGroup;
+			children = (
+				22D51ECC1BBC0E0E00FC315A /* Vector.h */,
+				22D51ECD1BBC2E9800FC315A /* Canvas.h */,
+				22D51ECE1BBC376B00FC315A /* Canvas.cpp */,
+				22D51ED01BBC380F00FC315A /* Color.cpp */,
+				22D51ED11BBC380F00FC315A /* Color.hpp */,
+			);
+			path = SoftRenderer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,6 +141,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				228E7C041BB955AA0068B6C0 /* main.cpp in Sources */,
+				22D51ED21BBC380F00FC315A /* Color.cpp in Sources */,
+				22D51ECF1BBC376B00FC315A /* Canvas.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +238,7 @@
 					/opt/local/include,
 					/usr/include,
 					/usr/local/include,
+					"$(PROJECT_DIR)/acRender/SoftRenderer",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -238,6 +263,7 @@
 					/opt/local/include,
 					/usr/include,
 					/usr/local/include,
+					"$(PROJECT_DIR)/acRender/SoftRenderer",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -273,6 +299,7 @@
 				228E7C091BB955AA0068B6C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

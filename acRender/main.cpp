@@ -1,49 +1,14 @@
-// ============================================================================
-// [Include Section]
-// ============================================================================
-#include <SDL2/SDL.h>
+#include "main.h"
 
-// ============================================================================
-// [SdlApplication]
-// ============================================================================
-#define APPTITLE "SDL Template Program"
-// SdlApplication is nothing more than thin wrapper to SDL library. You need
-// just to instantiate it and call run() to enter the SDL event loop.
-struct SdlApplication
-{
-	SdlApplication();
-	~SdlApplication();
-	
-	// Application state (just convenience instead of 0, 1, ...).
-	enum APP_STATE
-	{
-		APP_OK = 0,
-		APP_FAILED = 1
-	};
-	
-	// Initialize application, called by run(), don't call manually.
-	int init(int width, int height);
-	
-	// Destroy application, called by destructor, don't call manually.
-	void destroy();
-	
-	// Run application, called by your code.
-	int run(int width, int height);
-	
-	// Called to process SDL event.
-	void onEvent(SDL_Event* ev);
-	
-	// Called to render content into buffer.
-	void Render();
-	
-	// Whether the application is in event loop.
-	bool _running;
-	SDL_Window *win;
-	SDL_Renderer *renderer;
-};
-
-SdlApplication::SdlApplication() :
-_running(false)
+SdlApplication::SdlApplication()
+    : _running(false)
+    , mWinHeight(0)
+    , mWinWidth(0)
+    , mRenderer(nullptr)
+    , mWindow(nullptr)
+    , mTargetTex(nullptr)
+    , mPixelArray(nullptr)
+    , mAcCanvas(nullptr)
 {
 }
 
@@ -54,6 +19,9 @@ SdlApplication::~SdlApplication()
 
 int SdlApplication::init(int width, int height)
 {
+    mWinHeight = height;
+    mWinWidth = width;
+    
 	// Initialize the SDL library.
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
@@ -61,26 +29,31 @@ int SdlApplication::init(int width, int height)
 		return APP_FAILED;
 	}
 	
-	win = SDL_CreateWindow(APPTITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-	renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	
-	// Success.
+	mWindow = SDL_CreateWindow("Acros Soft-Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                               width, height, SDL_WINDOW_SHOWN);
+	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    mTargetTex = SDL_CreateTexture(mRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, mWinWidth, mWinHeight);
+    mPixelArray = new Uint32[mWinHeight*mWinWidth];
+    
+    mAcCanvas = new acRender::Canvas(mPixelArray,mWinWidth,mWinHeight);
+    
 	return APP_OK;
 }
 
 void SdlApplication::destroy()
 {
-	if (win)
+	if (mWindow)
 	{
-		SDL_DestroyWindow(win);
-		SDL_DestroyRenderer(renderer);
+        delete mAcCanvas;
+        delete [] mPixelArray;
+		SDL_DestroyWindow(mWindow);
+		SDL_DestroyRenderer(mRenderer);
 		SDL_Quit();
 	}
 }
 
 int SdlApplication::run(int width, int height)
 {
-	// Initialize application.
 	int state = init(width, height);
 	if (state != APP_OK) return state;
 	
@@ -91,7 +64,10 @@ int SdlApplication::run(int width, int height)
 	while (SDL_WaitEvent(&ev))
 	{
 		onEvent(&ev);
-		Render();
+        
+        update( 0.1f );
+		
+        render();
 		
 		if (_running == false)
 		{
@@ -120,34 +96,25 @@ void SdlApplication::onEvent(SDL_Event* ev)
 	}
 }
 
-void SdlApplication::Render()
+void SdlApplication::update(float dt)
 {
-	SDL_Rect r;
-	int w,h;
-	SDL_GetWindowSize(win, &w, &h);
-	
-	r.w = 200;
-	r.h = 200;
-	r.x = w/2-(r.w/2);
-	r.y = h/2-(r.h/2);
-	
-	
-	//
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0, 0xff);
-	SDL_RenderClear(renderer);
-	
-	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0, 0xff);
-	SDL_RenderFillRect(renderer, &r);
-	SDL_RenderPresent(renderer);
+    
+    mAcCanvas->update();
 }
 
-
-// ============================================================================
-// [Entry-Point]
-// ============================================================================
+void SdlApplication::render()
+{
+    
+    //Copy the custom image to GPU memory
+    SDL_UpdateTexture(mTargetTex, nullptr, mPixelArray, mWinWidth * sizeof (Uint32));
+//	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0, 0xff);
+	SDL_RenderClear(mRenderer);
+    SDL_RenderCopy(mRenderer, mTargetTex, nullptr, nullptr);
+    SDL_RenderPresent(mRenderer);
+}
 
 int main(int argc, char* argv[])
 {
 	SdlApplication app;
-	return app.run(640, 480);
+	return app.run(800, 600);
 }
