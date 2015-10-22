@@ -30,8 +30,9 @@ namespace acRender {
         void update();
         
         void drawPixel(int x,int y,float z, const Color& c);
-        //    void drawPoint(const Vector& p, const Color& c);
-        //    void drawLine();
+        void drawPixel(const Vector& p, const Color& c);
+        
+        void drawLine(const Vector& lVec,const Vector& rVec);
         
     protected:
         int     mWidth,mHeight;
