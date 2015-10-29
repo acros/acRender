@@ -10,7 +10,7 @@
 #define Vector_h
 
 #include <cassert>
-#include <cmath>
+#include <cmath>    //TODO: write sqrt function
 
 namespace acRender {
     

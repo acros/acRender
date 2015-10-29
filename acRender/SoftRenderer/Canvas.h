@@ -9,8 +9,9 @@
 #ifndef Canvas_h
 #define Canvas_h
 
-#include "Vector.h"
+//#include "Vector.h"
 #include "Color.hpp"
+#include "acMath.hpp"
 #include <SDL2/SDL.h>
 
 namespace acRender {
@@ -29,14 +30,17 @@ namespace acRender {
         
         void update();
         
-        void drawPixel(int x,int y,float z, const Color& c);
-        void drawPixel(const Vector& p, const Color& c);
-        
-        void drawLine(const Vector& lVec,const Vector& rVec);
+        void drawPixel(const Point& p, const Color& c);
+        void drawLine(const Point& lVec,const Point& rVec);
+        void drawTriangle(const Point& p1,const Point& p2,const Point& v3);
         
     protected:
-        int     mWidth,mHeight;
+        void drawPixel(int x,int y,float z, const Color& c);
+        void drawLine(int x1, int y1, int x2, int y2, const Color& c);
+        void drawBottomTriangle(const Point& p1, const Point& p2,const Point& p3, const Color& c);
+        void drawTopTriangle(const Point& p1,const Point& p2,const Point& p3, const Color& c);
         
+        int     mWidth,mHeight;
         Uint32*   mPixels;
         
     };

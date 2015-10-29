@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		220852861BDFE856001DD392 /* acMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 220852841BDFE856001DD392 /* acMath.cpp */; settings = {ASSET_TAGS = (); }; };
 		228E7C041BB955AA0068B6C0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228E7C031BB955AA0068B6C0 /* main.cpp */; };
 		22D51ECF1BBC376B00FC315A /* Canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D51ECE1BBC376B00FC315A /* Canvas.cpp */; settings = {ASSET_TAGS = (); }; };
 		22D51ED21BBC380F00FC315A /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D51ED01BBC380F00FC315A /* Color.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		220852841BDFE856001DD392 /* acMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = acMath.cpp; sourceTree = "<group>"; };
+		220852851BDFE856001DD392 /* acMath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = acMath.hpp; sourceTree = "<group>"; };
 		228E7C001BB955AA0068B6C0 /* acRender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = acRender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		228E7C031BB955AA0068B6C0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		228E7C0A1BB9944A0068B6C0 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
@@ -80,6 +83,8 @@
 				22D51ECE1BBC376B00FC315A /* Canvas.cpp */,
 				22D51ED01BBC380F00FC315A /* Color.cpp */,
 				22D51ED11BBC380F00FC315A /* Color.hpp */,
+				220852841BDFE856001DD392 /* acMath.cpp */,
+				220852851BDFE856001DD392 /* acMath.hpp */,
 			);
 			path = SoftRenderer;
 			sourceTree = "<group>";
@@ -141,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				228E7C041BB955AA0068B6C0 /* main.cpp in Sources */,
+				220852861BDFE856001DD392 /* acMath.cpp in Sources */,
 				22D51ED21BBC380F00FC315A /* Color.cpp in Sources */,
 				22D51ECF1BBC376B00FC315A /* Canvas.cpp in Sources */,
 			);
