@@ -89,9 +89,9 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..;..;%SDL2_DIR%\include;$(SolutionDir)\libs\gl3w;H:\codingEnv\AcRender\SDL2_image-2.0.4\include;$(SolutionDir)\imgui\examples\libs\gl3w;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..;..;%SDL2_DIR%\include;$(SolutionDir)\libs\gl3w;H:\codingEnv\AcRender\SDL2_image-2.0.4\include;$(SolutionDir)\imgui\examples\libs\gl3w;$(SolutionDir)\src;$(SolutionDir)\lib\glm;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -157,6 +157,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Base\AcObject.cpp" />
+    <ClCompile Include="..\..\..\src\Base\Math.cpp" />
+    <ClCompile Include="..\..\..\src\Camera\Camera.cpp" />
+    <ClCompile Include="..\..\..\src\esShapes.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Material.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Mesh.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Renderer.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\FboScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\LightScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\ParticleScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\Scene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\TextureScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\TriangleScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\VertexScene.cpp" />
     <ClCompile Include="..\..\imgui.cpp" />
     <ClCompile Include="..\..\imgui_demo.cpp" />
     <ClCompile Include="..\..\imgui_draw.cpp" />
@@ -168,6 +182,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\utils.h" />
+    <ClInclude Include="..\..\..\src\Base\AcObject.h" />
+    <ClInclude Include="..\..\..\src\Base\AcUtils.h" />
+    <ClInclude Include="..\..\..\src\Base\Math.h" />
+    <ClInclude Include="..\..\..\src\Camera\Camera.h" />
+    <ClInclude Include="..\..\..\src\Render\Material.h" />
+    <ClInclude Include="..\..\..\src\Render\Mesh.h" />
+    <ClInclude Include="..\..\..\src\Render\Renderer.h" />
+    <ClInclude Include="..\..\..\src\Scene\FboScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\LightScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\ParticleScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\Scene.hpp" />
+    <ClInclude Include="..\..\..\src\Scene\TextureScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\TriangleScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\VertexScene.h" />
     <ClInclude Include="..\..\imconfig.h" />
     <ClInclude Include="..\..\imgui.h" />
     <ClInclude Include="..\..\imgui_internal.h" />

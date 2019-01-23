@@ -13,19 +13,14 @@
 #include <SDL_image.h>
 #include "../include/utils.h"
 
-// About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
-// Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
-// You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>    // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>    // Initialize with glewInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>  // Initialize with gladLoadGL()
-#else
-#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#endif
-
+#include "Render/Renderer.h"
+#include "Scene/Scene.hpp"
+#include "Scene/VertexScene.h"
+#include "Scene/FboScene.h"
+#include "Scene/LightScene.h"
+#include "Scene/ParticleScene.h"
+#include "Scene/TextureScene.h"
+#include "Scene/TriangleScene.h"
 
 /*
  * Log an SDL error with some error message to the output stream of our choice
@@ -118,7 +113,7 @@ int main(int, char**)
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_DisplayMode current;
     SDL_GetCurrentDisplayMode(0, &current);
-    SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("AcRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -189,23 +184,10 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    /*
-    SDL_Rect clips[4];
-    int iW = 100, iH = 100;
-    int x = (int)io.DisplaySize.x / 2 - iW / 2;
-    int y = (int)io.DisplaySize.y / 2 - iH / 2;
-    //Setup the clips for our image
-    //Since our clips our uniform in size we can generate a list of their
-    //positions using some math (the specifics of this are covered in the lesson)
-    for (int i = 0; i < 4; ++i) {
-        clips[i].x = i / 2 * iW;
-        clips[i].y = i % 2 * iH;
-        clips[i].w = iW;
-        clips[i].h = iH;
-    }
-    //Specify a default clip to start with
-    int useClip = 0;
-    */
+   
+    Renderer	mRenderer;
+    Scene* mScene = new VertexScene(mRenderer);
+    mScene->enter();
 
     // Main loop
     bool done = false;
@@ -225,31 +207,6 @@ int main(int, char**)
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
 
-            /*
-            //Use number input to select which clip should be drawn
-            if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                case SDLK_1:
-                case SDLK_KP_1:
-                    useClip = 0;
-                    break;
-                case SDLK_2:
-                case SDLK_KP_2:
-                    useClip = 1;
-                    break;
-                case SDLK_3:
-                case SDLK_KP_3:
-                    useClip = 2;
-                    break;
-                case SDLK_4:
-                case SDLK_KP_4:
-                    useClip = 3;
-                    break;
-                default:
-                    break;
-                }
-            }
-            */
         }
 
         // Start the Dear ImGui frame
@@ -301,23 +258,12 @@ int main(int, char**)
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        mRenderer.setViewport((int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        mScene->update(1.0f/ImGui::GetIO().Framerate);
+        mScene->render();
 
-        /*
-        //Draw image
-        int iW = 100, iH = 100;
-        int x = (int)io.DisplaySize.x / 2 - iW / 2;
-        int y = (int)io.DisplaySize.y / 2 - iH / 2;
-        for (int i = 0; i < 4; ++i) {
-            clips[i].x = i / 2 * iW;
-            clips[i].y = i % 2 * iH;
-            clips[i].w = iW;
-            clips[i].h = iH;
-        }
-        SDL_RenderClear(renderer);
-        renderTexture(image, renderer, x, y, &clips[useClip]);
-        SDL_RenderPresent(renderer);
-        */
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         SDL_GL_SwapWindow(window);
     }
@@ -333,6 +279,9 @@ int main(int, char**)
     //Add
     IMG_Quit();
 
+    if (mScene != nullptr) {
+        delete mScene;
+    }
     SDL_Quit();
 
     return 0;
