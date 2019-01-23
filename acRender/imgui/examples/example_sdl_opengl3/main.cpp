@@ -8,6 +8,10 @@
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 #include <SDL.h>
+#include <iostream>
+#include <string>
+#include <SDL_image.h>
+#include "../include/utils.h"
 
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
 // Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
@@ -21,6 +25,66 @@
 #else
 #include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
+
+
+/*
+ * Log an SDL error with some error message to the output stream of our choice
+ * @param os The output stream to write the message too
+ * @param msg The error message to write, format will be msg error: SDL_GetError()
+ */
+void logSDLError(std::ostream &os, const std::string &msg) {
+    os << msg << " error: " << SDL_GetError() << std::endl;
+}
+/*
+ * Loads an image into a texture on the rendering device
+ * @param file The image file to load
+ * @param ren The renderer to load the texture onto
+ * @return the loaded texture, or nullptr if something went wrong.
+ */
+SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren) {
+    SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
+    if (texture == nullptr) {
+        logSDLError(std::cout, "LoadTexture");
+    }
+    return texture;
+}
+/*
+ * Draw an SDL_Texture to an SDL_Renderer at some destination rect
+ * taking a clip of the texture if desired
+ * @param tex The source texture we want to draw
+ * @param rend The renderer we want to draw too
+ * @param dst The destination rectangle to render the texture too
+ * @param clip The sub-section of the texture to draw (clipping rect)
+ *		default of nullptr draws the entire texture
+ */
+void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, SDL_Rect dst, SDL_Rect *clip = nullptr) {
+    SDL_RenderCopy(ren, tex, clip, &dst);
+}
+/*
+ * Draw an SDL_Texture to an SDL_Renderer at position x, y, preserving
+ * the texture's width and height and taking a clip of the texture if desired
+ * If a clip is passed, the clip's width and height will be used instead of the texture's
+ * @param tex The source texture we want to draw
+ * @param rend The renderer we want to draw too
+ * @param x The x coordinate to draw too
+ * @param y The y coordinate to draw too
+ * @param clip The sub-section of the texture to draw (clipping rect)
+ *		default of nullptr draws the entire texture
+ */
+void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, SDL_Rect *clip = nullptr) {
+    SDL_Rect dst;
+    dst.x = x;
+    dst.y = y;
+    if (clip != nullptr) {
+        dst.w = clip->w;
+        dst.h = clip->h;
+    }
+    else {
+        SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+    }
+    renderTexture(tex, ren, dst, clip);
+}
+
 
 int main(int, char**)
 {
@@ -57,6 +121,24 @@ int main(int, char**)
     SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_SetSwapInterval(1); // Enable vsync
+
+    /*
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == nullptr) {
+        logSDLError(std::cout, "CreateRenderer");
+        cleanup(window);
+        SDL_Quit();
+        return 1;
+    }
+    const std::string resPath = getResourcePath("");
+    SDL_Texture *image = loadTexture(resPath + "image.png", renderer);
+    if (image == nullptr) {
+        cleanup(image, renderer, window);
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    */
 
     // Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
@@ -107,6 +189,24 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    /*
+    SDL_Rect clips[4];
+    int iW = 100, iH = 100;
+    int x = (int)io.DisplaySize.x / 2 - iW / 2;
+    int y = (int)io.DisplaySize.y / 2 - iH / 2;
+    //Setup the clips for our image
+    //Since our clips our uniform in size we can generate a list of their
+    //positions using some math (the specifics of this are covered in the lesson)
+    for (int i = 0; i < 4; ++i) {
+        clips[i].x = i / 2 * iW;
+        clips[i].y = i % 2 * iH;
+        clips[i].w = iW;
+        clips[i].h = iH;
+    }
+    //Specify a default clip to start with
+    int useClip = 0;
+    */
+
     // Main loop
     bool done = false;
     while (!done)
@@ -124,6 +224,32 @@ int main(int, char**)
                 done = true;
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
+
+            /*
+            //Use number input to select which clip should be drawn
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                case SDLK_1:
+                case SDLK_KP_1:
+                    useClip = 0;
+                    break;
+                case SDLK_2:
+                case SDLK_KP_2:
+                    useClip = 1;
+                    break;
+                case SDLK_3:
+                case SDLK_KP_3:
+                    useClip = 2;
+                    break;
+                case SDLK_4:
+                case SDLK_KP_4:
+                    useClip = 3;
+                    break;
+                default:
+                    break;
+                }
+            }
+            */
         }
 
         // Start the Dear ImGui frame
@@ -174,7 +300,25 @@ int main(int, char**)
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
+
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        /*
+        //Draw image
+        int iW = 100, iH = 100;
+        int x = (int)io.DisplaySize.x / 2 - iW / 2;
+        int y = (int)io.DisplaySize.y / 2 - iH / 2;
+        for (int i = 0; i < 4; ++i) {
+            clips[i].x = i / 2 * iW;
+            clips[i].y = i % 2 * iH;
+            clips[i].w = iW;
+            clips[i].h = iH;
+        }
+        SDL_RenderClear(renderer);
+        renderTexture(image, renderer, x, y, &clips[useClip]);
+        SDL_RenderPresent(renderer);
+        */
+
         SDL_GL_SwapWindow(window);
     }
 
@@ -185,6 +329,10 @@ int main(int, char**)
 
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
+
+    //Add
+    IMG_Quit();
+
     SDL_Quit();
 
     return 0;

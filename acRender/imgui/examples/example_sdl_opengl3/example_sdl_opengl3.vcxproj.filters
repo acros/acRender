@@ -60,6 +60,9 @@
     <ClInclude Include="..\imgui_impl_sdl.h">
       <Filter>sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\utils.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.txt" />
