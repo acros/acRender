@@ -26,10 +26,10 @@ void Renderer::checkRendererVersion() const
 {
 	//Check glVersion
     const char* glVer = (const char*)glGetString(GL_VERSION);
-//    logMessage("OpenGL-ES version is : %s.\n",glVer);
+    logMessage("OpenGL-ES version is : %s.\n",glVer);
     
     const char* glShaderVer = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-//    logMessage("OpenGL-ES shader version is : %s.\n",glShaderVer);
+    logMessage("OpenGL-ES shader version is : %s.\n",glShaderVer);
 }
 
 GLuint Renderer::loadShaderProgram(const string& vertStr, const string& fragStr)

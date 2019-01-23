@@ -38,7 +38,6 @@ VertexScene::VertexScene(Renderer& renderer)
 		"    gl_Position.x += u_offset;             \n"
 		"}";
 
-
 	mFragStr =
 		"#version 300 es            \n"
 		"precision mediump float;   \n"
@@ -48,6 +47,31 @@ VertexScene::VertexScene(Renderer& renderer)
 		"{                          \n"
 		"    o_fragColor = v_color; \n"
 		"}";
+	
+	/*
+	mVertStr =
+		"#version 130				\n"
+		"uniform float u_offset;                    \n"
+		"in vec4 a_position;   \n"
+		"in vec4 a_color;      \n"
+		"out vec4 v_color;\n"
+		"void main()\n"
+		"{\n"
+		"    v_color = a_color;                     \n"
+		"    gl_Position = a_position;              \n"
+		"    gl_Position.x += u_offset;             \n"
+		"}\n";
+
+
+	mFragStr =
+		"#version 130				\n"
+		"in vec4 v_color;\n"
+		"out vec4 o_fragColor;\n"
+		"void main()\n"
+		"{\n"
+		"    o_fragColor = v_color; \n"
+		"}\n";
+		*/
 }
 
 VertexScene::~VertexScene()
@@ -81,10 +105,12 @@ void VertexScene::enter()
 	glBindBuffer(GL_ARRAY_BUFFER,mVboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemVboId);
 
+//	glBindAttribLocation(mShaderProgram,VERTEX_POS_INDX,"a_position");
 	glEnableVertexAttribArray(VERTEX_POS_INDX);
 	glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), 0);
 
 	GLint offset = sizeof(GLfloat) * VERTEX_POS_SIZE;
+//	glBindAttribLocation(mShaderProgram, VERTEX_COLOR_INDX, "a_color");
 	glEnableVertexAttribArray(VERTEX_COLOR_INDX);
 	glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), (const void*)offset);
 

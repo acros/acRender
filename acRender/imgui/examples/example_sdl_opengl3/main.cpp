@@ -100,6 +100,7 @@ int main(int, char**)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
     // GL 3.0 + GLSL 130
+ //   const char* glsl_version = "#version 450";
     const char* glsl_version = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -116,24 +117,6 @@ int main(int, char**)
     SDL_Window* window = SDL_CreateWindow("AcRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_SetSwapInterval(1); // Enable vsync
-
-    /*
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr) {
-        logSDLError(std::cout, "CreateRenderer");
-        cleanup(window);
-        SDL_Quit();
-        return 1;
-    }
-    const std::string resPath = getResourcePath("");
-    SDL_Texture *image = loadTexture(resPath + "image.png", renderer);
-    if (image == nullptr) {
-        cleanup(image, renderer, window);
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-    */
 
     // Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
@@ -189,6 +172,7 @@ int main(int, char**)
     Scene* mScene = new VertexScene(mRenderer);
     mScene->enter();
 
+    mRenderer.checkRendererVersion();
     // Main loop
     bool done = false;
     while (!done)
@@ -268,6 +252,11 @@ int main(int, char**)
         SDL_GL_SwapWindow(window);
     }
 
+    if (mScene != nullptr) {
+        mScene->exit();
+        delete mScene;
+    }
+
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -279,9 +268,6 @@ int main(int, char**)
     //Add
     IMG_Quit();
 
-    if (mScene != nullptr) {
-        delete mScene;
-    }
     SDL_Quit();
 
     return 0;
