@@ -18,6 +18,8 @@ public:
 	virtual void exit()override;
 protected:
 
+	bool		mUseElementDraw;
+
 
 	GLuint          mVAO;
 	GLuint          mPosBuffer;

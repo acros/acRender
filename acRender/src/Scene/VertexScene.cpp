@@ -1,4 +1,6 @@
 #include "VertexScene.h"
+#include "utils.h"
+#include "Base/AcUtils.h"
 
 const int VERTEX_POS_INDX = 0;
 const int VERTEX_COLOR_INDX = 1;
@@ -23,8 +25,37 @@ VertexScene::VertexScene(Renderer& renderer)
 	: Scene(renderer)
 	, mVboId(0)
 	, mElemVboId(0)
+#if !USE_OGL_3_LATEST
 	, mVaoId(0)
+#endif
 {
+#if USE_OGL_3_LATEST
+	mVertStr =
+		"#version 450 core                         \n"
+		//"#version 410 core  \n";
+		"uniform float u_offset;                    \n"
+		"layout(location = 0) in vec4 a_position;   \n"
+		"layout(location = 1) in vec4 a_color;      \n"
+		"out vec4 v_color;\n"
+		"void main()\n"
+		"{\n"
+		"    v_color = a_color;                     \n"
+		"    gl_Position = a_position;              \n"
+		"    gl_Position.x += u_offset;             \n"
+		"}\n";
+
+
+	mFragStr =
+		"#version 450 core                         \n"
+	//	"#version 410 core  \n";
+		"in vec4 v_color;\n"
+		"out vec4 o_fragColor;\n"
+		"void main()\n"
+		"{\n"
+		"    o_fragColor = v_color; \n"
+		"}\n";
+#else
+
 	mVertStr =
 		"#version 300 es                            \n"
 		"layout(location = 0) in vec4 a_position;   \n"
@@ -47,31 +78,7 @@ VertexScene::VertexScene(Renderer& renderer)
 		"{                          \n"
 		"    o_fragColor = v_color; \n"
 		"}";
-	
-	/*
-	mVertStr =
-		"#version 130				\n"
-		"uniform float u_offset;                    \n"
-		"in vec4 a_position;   \n"
-		"in vec4 a_color;      \n"
-		"out vec4 v_color;\n"
-		"void main()\n"
-		"{\n"
-		"    v_color = a_color;                     \n"
-		"    gl_Position = a_position;              \n"
-		"    gl_Position.x += u_offset;             \n"
-		"}\n";
-
-
-	mFragStr =
-		"#version 130				\n"
-		"in vec4 v_color;\n"
-		"out vec4 o_fragColor;\n"
-		"void main()\n"
-		"{\n"
-		"    o_fragColor = v_color; \n"
-		"}\n";
-		*/
+#endif
 }
 
 VertexScene::~VertexScene()
@@ -82,37 +89,48 @@ VertexScene::~VertexScene()
 void VertexScene::enter()
 {
 	Scene::enter();
-	
+
+	//VBO rely on VAO
+	glGenVertexArrays(1, &mVaoId);
+	glBindVertexArray(mVaoId);
+
 	//Init VBO (Vertex Buffer Object)
+	glEnableVertexAttribArray(VERTEX_POS_INDX);//For Vertex
 	glGenBuffers(1, &mVboId);
 	glBindBuffer(GL_ARRAY_BUFFER, mVboId);
 	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * (VERTEX_COLOR_SIZE + VERTEX_POS_SIZE), vertices,GL_STATIC_DRAW);
+	glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), 0);
+
+	GLenum sx = glGetError();
+	if (sx != GL_NO_ERROR)
+		logMessage("GL state bind vertex VBO: %d \n", sx);
+
+	GLint offset = sizeof(GLfloat) * VERTEX_POS_SIZE;
+	glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GL_FLOAT, GL_FALSE,
+		sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), (const void*)offset);
+
 
 	//Init VBO (Element Vertex Buffer Object)
+	/*
+	glEnableVertexAttribArray(VERTEX_COLOR_INDX);//For Color
+	glEnableVertexAttribArray(1);//For Color
+	glGenBuffers(1, &mVboColorId);
+	glBindBuffer(GL_ARRAY_BUFFER, mVboColorId);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vColors), vColors, GL_STATIC_DRAW);
+	*/
+
 	glGenBuffers(1, &mElemVboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemVboId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLushort) ,indices,GL_STATIC_DRAW);
 
-	//////////////////////////////////////////////////////////////////////////
-
-	//Init VAO
+#if !USE_OGL_3_LATEST
 	glGenVertexArrays(1, &mVaoId);
-
-	//Bind vertex array
 	glBindVertexArray(mVaoId);
+#endif
 
 	//Bind VertexArray, then set VBO attributes
-	glBindBuffer(GL_ARRAY_BUFFER,mVboId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemVboId);
-
-//	glBindAttribLocation(mShaderProgram,VERTEX_POS_INDX,"a_position");
-	glEnableVertexAttribArray(VERTEX_POS_INDX);
-	glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), 0);
-
-	GLint offset = sizeof(GLfloat) * VERTEX_POS_SIZE;
-//	glBindAttribLocation(mShaderProgram, VERTEX_COLOR_INDX, "a_color");
-	glEnableVertexAttribArray(VERTEX_COLOR_INDX);
-	glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE), (const void*)offset);
+//	glBindBuffer(GL_ARRAY_BUFFER,mVboId);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemVboId);
 
 	glBindVertexArray(0);
 }
@@ -124,17 +142,21 @@ void VertexScene::render()
 	// Use the program object
 	glUseProgram(mShaderProgram);
 
-	drawWithVertexArray();
-
 	drawWithVBO();
 
+#if !USE_OGL_3_LATEST
+	//After OGL 3.3, Only VBO draw allowed
+	drawWithVertexArray();
+	
 	drawWithVAO();
+#endif
 
 	mRendererRef.endDraw();
 }
 
 void VertexScene::drawWithVertexArray()
-{	//Shader value
+{	
+	//Shader value
 	GLint offsetLoc = glGetUniformLocation(mShaderProgram, "u_offset");
 	glUniform1f(offsetLoc, -0.5f);
 
@@ -152,10 +174,9 @@ void VertexScene::drawWithVertexArray()
 	glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE, GL_FLOAT, GL_FALSE, arrayStride,vertexBuf);
 
 	vertexBuf += (VERTEX_POS_SIZE * sizeof(GLfloat));
-	glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GL_FALSE, GL_FALSE, arrayStride, vertexBuf);
+	glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GL_FLOAT, GL_FALSE, arrayStride, vertexBuf);
 
 	glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,indices);
-
 }
 
 void VertexScene::drawWithVBO()
@@ -164,13 +185,19 @@ void VertexScene::drawWithVBO()
 	float offsetLoc = glGetUniformLocation(mShaderProgram, "u_offset");
 	glUniform1f(offsetLoc, 0.5f);
 
-	//Bind Buffer
+
+	glBindVertexArray(mVaoId);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mVboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemVboId);
 
-	//Enable vertex attribute
 	glEnableVertexAttribArray(VERTEX_POS_INDX);
-	glEnableVertexAttribArray(VERTEX_COLOR_INDX);
+	glEnableVertexAttribArray(VERTEX_COLOR_INDX);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+//	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+
+	/*
 	//Set attribute
 	GLsizei arrayStride = sizeof(GLfloat) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE);
 
@@ -186,6 +213,7 @@ void VertexScene::drawWithVBO()
 	// Element num type is unsigned short
 	// Used element array buffer here, no data need to send, so the last param is 0
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+	*/
 
 	//Close attribute
 	glDisableVertexAttribArray(VERTEX_POS_INDX);
@@ -198,6 +226,7 @@ void VertexScene::drawWithVBO()
 
 void VertexScene::drawWithVAO()
 {
+#if !USE_OGL_3_LATEST
 	//Shader value
 	float offsetLoc = glGetUniformLocation(mShaderProgram, "u_offset");
 	glUniform1f(offsetLoc, 0.0f);
@@ -207,10 +236,12 @@ void VertexScene::drawWithVAO()
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (const void*)0);
 
 	glBindVertexArray(0);
+#endif
 }
 
 void VertexScene::exit()
 {
+	glDeleteVertexArrays(1, &mVaoId);
 	glDeleteBuffers(1, &mVboId);
 	glDeleteBuffers(1, &mElemVboId);
 }

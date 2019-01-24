@@ -15,11 +15,18 @@ public:
 
 	virtual void render()override;
 
+	virtual void exit()override;
+
 protected:
 
 	GLuint createSimpleTexture2D();
 
 	GLint mSampleLocation;
 	GLuint mTexId;
+
+	GLuint mVaoId;
+	GLuint mPosId;
+	GLuint mElemIdx;
+
 
 };

@@ -1,4 +1,5 @@
 #include "FboScene.h"
+#include "Base/AcUtils.h"
 
 FboScene::FboScene(Renderer& renderer)
 	: Scene(renderer)
@@ -11,6 +12,28 @@ FboScene::FboScene(Renderer& renderer)
 	mTexId[0] = 0;
 	mTexId[1] = 0;
 
+#if USE_OGL_3_LATEST
+	mVertStr =
+		"#version 330 core                            \n"
+		"layout(location = 0) in vec4 a_position;   \n"
+		"layout(location = 1) in vec2 a_texCoord;   \n"
+		"out vec2 v_texCoord;                       \n"
+		"void main()                                \n"
+		"{                                          \n"
+		"   gl_Position = a_position;               \n"
+		"   v_texCoord = a_texCoord;                \n"
+		"}                                          \n";
+
+	mFragStr =
+		"#version 330 core                            \n"
+		"in vec2 v_texCoord;                                 \n"
+		"layout(location = 0) out vec4 outColor;             \n"
+		"uniform sampler2D s_texture;                        \n"
+		"void main()                                         \n"
+		"{                                                   \n"
+		"  outColor = texture( s_texture, vec2(v_texCoord.x,1.0 - v_texCoord.y ));      \n"
+		"}                                                   \n";
+#else
 	mVertStr =
 		"#version 300 es                            \n"
 		"layout(location = 0) in vec4 a_position;   \n"
@@ -32,6 +55,7 @@ FboScene::FboScene(Renderer& renderer)
 		"{                                                   \n"
 		"  outColor = texture( s_texture, vec2(v_texCoord.x,1.0 - v_texCoord.y ));      \n"
 		"}                                                   \n";
+#endif
 }
 
 FboScene::~FboScene()
@@ -41,7 +65,7 @@ FboScene::~FboScene()
 
 void FboScene::enter()
 {
-//	Scene::enter();
+	Scene::enter();
 	//Load default 
 	mDefaultProgram = mRendererRef.loadShaderProgram(mVertStr, mFragStr);
 
@@ -192,6 +216,12 @@ void FboScene::render()
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+
+
+		GLenum sx = glGetError();
+		if (sx != GL_NO_ERROR)
+			logMessage("GL state glVertexAttribPointer: %d \n", sx);
+
 	}
 }
 

@@ -176,7 +176,7 @@ int main(int, char**)
 
    
     Renderer	mRenderer;
-    Scene* mScene = new TriangleScene(mRenderer);
+    Scene* mScene = new TextureScene(mRenderer);
     mScene->enter();
 
     mRenderer.checkRendererVersion();

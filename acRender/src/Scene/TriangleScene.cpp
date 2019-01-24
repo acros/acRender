@@ -1,8 +1,14 @@
 #include "TriangleScene.h"
 #include "Base/AcUtils.h"
 
+static const GLushort vertex_indices[] =
+{
+	0, 1, 2,
+};
+
 TriangleScene::TriangleScene(Renderer& renderer)
 	: Scene(renderer)
+	, mUseElementDraw(false)
 {
 #if USE_OGL_3_LATEST
 	mVertStr =
@@ -69,10 +75,6 @@ void TriangleScene::enter()
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f };
 
-	static const GLushort vertex_indices[] =
-	{
-		0, 1, 2,
-	};
 
 	GLfloat vColors[] = {
 		1.0f, 0.0f,0.0f,
@@ -93,9 +95,12 @@ void TriangleScene::enter()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vColors), vColors, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),NULL /*(GLvoid *)(3 * sizeof(GLfloat))*/);
 
-	glGenBuffers(1, &mIdxBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
+	if (!mUseElementDraw)
+	{
+		glGenBuffers(1, &mIdxBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
+	}
 
 #endif
 }
@@ -108,30 +113,26 @@ void TriangleScene::render()
 	glUseProgram(mShaderProgram);
 
 #if USE_OGL_3_LATEST
-	//Warning: After OpenGL 3.3 , VAO is deprecated
-//	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-
-//	glViewport(0, 0, 512, 512);
-// 	static const GLfloat blue[] = { 0.0f, 0.0f, 0.3f, 1.0f };
-// 	glClearBufferfv(GL_COLOR, 0, blue);
-// 	glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
-
 	glUseProgram(mShaderProgram);
 
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-//	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+	//Warning: After OpenGL 3.3 , VAO is deprecated
+	if (mUseElementDraw)
+	{
+		//Always update the indices
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, vertex_indices);
+	}
+	else
+	{
+		//Use the preset indices , better performance
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
 
 #else
 	GLint Posid = 0;
 	glVertexAttribPointer(Posid, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
 	glEnableVertexAttribArray(Posid);
-
-	GLenum sx = glGetError();
-	if (sx != GL_NO_ERROR)
-		logMessage("GL state glVertexAttribPointer: %d \n", sx);
-
+	
 	//the next triangle
 	// 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, vColors);
 	// 	glEnableVertexAttribArray(1);
