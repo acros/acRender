@@ -22,6 +22,7 @@
 #include "Scene/TextureScene.h"
 #include "Scene/TriangleScene.h"
 
+
 /*
  * Log an SDL error with some error message to the output stream of our choice
  * @param os The output stream to write the message too
@@ -98,9 +99,15 @@ int main(int, char**)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#elif USE_OGL_3_LATEST
+    const char* glsl_version = "#version 330 core";
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 #else
     // GL 3.0 + GLSL 130
- //   const char* glsl_version = "#version 450";
     const char* glsl_version = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -169,7 +176,7 @@ int main(int, char**)
 
    
     Renderer	mRenderer;
-    Scene* mScene = new VertexScene(mRenderer);
+    Scene* mScene = new TriangleScene(mRenderer);
     mScene->enter();
 
     mRenderer.checkRendererVersion();
@@ -243,7 +250,13 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         mRenderer.setViewport((int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        mScene->update(1.0f/ImGui::GetIO().Framerate);
+        float frate = io.Framerate;
+        float deltaTime = 0.0;
+        if (frate > 0)
+        {
+            deltaTime = 1 / frate;
+        }
+        mScene->update(deltaTime);
         mScene->render();
 
 
