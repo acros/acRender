@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string>
 #include "Render/Renderer.h"
+#include "Base/AcUtils.h"
 
 using namespace std;
 
@@ -30,7 +31,17 @@ public:
     virtual void render() = 0;
     
     virtual void exit();
-    
+
+#if ACROS_USE_IMGUI
+	virtual void renderImgui() {}
+	static void	DrawImGui();
+#endif 
+
+	static void UpdateScene(Renderer& r);
+	static void ClearScene();
+
+	static Scene*	GetScene() { return sShowingScene; }
+
 protected:
     
 	string	mVertStr;
@@ -39,6 +50,11 @@ protected:
 	GLuint	mShaderProgram;
 
 	Renderer&	mRendererRef;
+
+	static class Scene*	sShowingScene;
+	static int sSceneSelection;
+	static int sCurrenSceneIdx;
+	const static string SceneList[];
 };
 
 

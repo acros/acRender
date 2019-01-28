@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <cassert>
 
+#define ACROS_USE_IMGUI	1
+
 
 void logMessage(const char *formatStr, ...);
 
@@ -15,6 +17,8 @@ int  esGenCube(float scale, GLfloat **vertices, GLfloat **normals,
 
 int  esGenSquareGrid(int size, GLfloat **vertices, GLuint **indices);
 
+
+#define SAFE_DELETE(N) {if((N)!=nullptr) {delete (N); (N) = nullptr;}}
 
 /*
 #ifdef __cplusplus

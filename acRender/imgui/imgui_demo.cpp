@@ -411,12 +411,13 @@ static void ShowDemoWindowWidgets()
         }
 
         static bool check = true;
-        ImGui::Checkbox("checkbox", &check);
+        ImGui::Checkbox("", &check);
 
-        static int e = 0;
-        ImGui::RadioButton("radio a", &e, 0); ImGui::SameLine();
-        ImGui::RadioButton("radio b", &e, 1); ImGui::SameLine();
-        ImGui::RadioButton("radio c", &e, 2);
+        static int sceneSelection = 0;
+        ImGui::RadioButton("radio a", &sceneSelection, 0); ImGui::SameLine();
+        ImGui::RadioButton("radio b", &sceneSelection, 1); ImGui::SameLine();
+        ImGui::RadioButton("radio c", &sceneSelection, 2);
+
 
         // Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
         for (int i = 0; i < 7; i++)

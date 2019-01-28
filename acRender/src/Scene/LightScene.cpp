@@ -12,6 +12,29 @@ LightScene::LightScene(Renderer& renderer)
 	mTexId[0] = 0;
 	mTexId[1] = 0;
 
+#if USE_OGL_3_LATEST
+	mVertStr =
+		"#version 450 core                         \n"
+		"layout(location = 0) in vec4 a_position;   \n"
+		"layout(location = 1) in vec2 a_texCoord;   \n"
+		"out vec2 v_texCoord;                       \n"
+		"void main()                                \n"
+		"{                                          \n"
+		"   gl_Position = a_position;               \n"
+		"   v_texCoord = a_texCoord;                \n"
+		"}                                          \n";
+
+	mFragStr =
+		"#version 450 core									\n"
+		"precision mediump float;                            \n"
+		"in vec2 v_texCoord;                                 \n"
+		"layout(location = 0) out vec4 outColor;             \n"
+		"uniform sampler2D s_texture;                        \n"
+		"void main()                                         \n"
+		"{                                                   \n"
+		"  outColor = texture( s_texture, vec2(v_texCoord.x,1.0 - v_texCoord.y ));      \n"
+		"}                                                   \n";
+#else
 	mVertStr =
 		"#version 300 es                            \n"
 		"layout(location = 0) in vec4 a_position;   \n"
@@ -33,6 +56,7 @@ LightScene::LightScene(Renderer& renderer)
 		"{                                                   \n"
 		"  outColor = texture( s_texture, vec2(v_texCoord.x,1.0 - v_texCoord.y ));      \n"
 		"}                                                   \n";
+#endif
 }
 
 LightScene::~LightScene()
@@ -42,9 +66,7 @@ LightScene::~LightScene()
 
 void LightScene::enter()
 {
-//	Scene::enter();
-	//Load default 
-	mDefaultProgram = mRendererRef.loadShaderProgram(mVertStr, mFragStr);
+	Scene::enter();
 
 	//Set camera 
 	mCam = new Camera(800/600.f,45.f,1.f,1000.f);

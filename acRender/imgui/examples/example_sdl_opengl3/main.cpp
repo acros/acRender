@@ -170,14 +170,14 @@ int main(int, char**)
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
 
-    bool show_demo_window = true;
+    bool show_demo_window = false;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
    
     Renderer	mRenderer;
-    Scene* mScene = new TextureScene(mRenderer);
-    mScene->enter();
+//    Scene* mScene = new TextureScene(mRenderer);
+//    mScene->enter();
 
     mRenderer.checkRendererVersion();
     // Main loop
@@ -209,7 +209,10 @@ int main(int, char**)
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
+        Scene::DrawImGui();
+
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+        /*
         {
             static float f = 0.0f;
             static int counter = 0;
@@ -231,6 +234,7 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
+        */
 
         // 3. Show another simple window.
         if (show_another_window)
@@ -256,19 +260,17 @@ int main(int, char**)
         {
             deltaTime = 1 / frate;
         }
-        mScene->update(deltaTime);
-        mScene->render();
 
+        Scene::UpdateScene(mRenderer);
+        Scene::GetScene()->update(deltaTime);
+        Scene::GetScene()->render();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         SDL_GL_SwapWindow(window);
     }
 
-    if (mScene != nullptr) {
-        mScene->exit();
-        delete mScene;
-    }
+    Scene::ClearScene();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

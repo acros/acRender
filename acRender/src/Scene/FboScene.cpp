@@ -14,7 +14,7 @@ FboScene::FboScene(Renderer& renderer)
 
 #if USE_OGL_3_LATEST
 	mVertStr =
-		"#version 330 core                            \n"
+		"#version 450 core                         \n"
 		"layout(location = 0) in vec4 a_position;   \n"
 		"layout(location = 1) in vec2 a_texCoord;   \n"
 		"out vec2 v_texCoord;                       \n"
@@ -25,7 +25,7 @@ FboScene::FboScene(Renderer& renderer)
 		"}                                          \n";
 
 	mFragStr =
-		"#version 330 core                            \n"
+		"#version 450 core                         \n"
 		"in vec2 v_texCoord;                                 \n"
 		"layout(location = 0) out vec4 outColor;             \n"
 		"uniform sampler2D s_texture;                        \n"
@@ -230,9 +230,9 @@ void FboScene::exit()
 	glDeleteFramebuffers(1, &mFbo);
 	glDeleteTextures(2, mTexId);
 
-	delete mCam;
-	delete mCube;
-	delete mGround;
+	SAFE_DELETE(mCam);
+	SAFE_DELETE(mCube);
+	SAFE_DELETE(mGround);
 }
 
 void FboScene::drawDepthTexture()
