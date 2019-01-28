@@ -17,6 +17,12 @@ public:
 
 	virtual void exit()override;
 
+	virtual void update(float delta)override;
+
+#if ACROS_USE_IMGUI
+	virtual void renderImgui() override;
+#endif
+
 protected:
 
 	class AcObject*	mObj;

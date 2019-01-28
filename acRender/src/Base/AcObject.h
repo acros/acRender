@@ -1,27 +1,24 @@
 #pragma once
 
 #include "Render/Renderer.h"
-#include "Math.h"
-
+#include "Math/AcTranform.h"
+#include "Base/AcUtils.h"
 
 //The basic object
 class AcObject {
 public:
-	AcObject() : mAngleY(0.f),mScale(1,1,1), mMesh(nullptr){}
+	AcObject();
 	virtual ~AcObject();
 
 	const AcMatrix&	getModelMat();
-//	const AcMatrix& getViewMat();
 
-	const AcVector&	getPosition()const { return mPos; }
-	const AcVector&	getScale()const { return mScale; }
-	const AcVector&	getRotation()const { return mRot; }
+	const AcVector&	getPosition()const { return mTransform.translation; }
+	const AcVector&	getScale()const { return mTransform.scale; }
+	const AcQuat&	getRotation()const { return mTransform.rot; }
 
-//	void setLookAt(const AcVector& vec) { mLookAt = vec; }
-
-	void setPosition(const AcVector& pos) { mPos = pos; }
-	void setScale(const AcVector& scale) { mScale = scale; }
-	void setRotation(const AcVector& rot) { mRot = rot; }
+	void setPosition(const AcVector& pos) { mTransform.translation = pos; }
+	void setScale(const AcVector& scale) { mTransform.scale = scale; }
+	void setRotation(const AcVector& rot) { mTransform.rot = rot; }
 
 	void rotate(const AcVector& rotAxis, float angle);
 
@@ -35,18 +32,15 @@ public:
 	//Debug use
 	void createShape(ShapeType	shape);
 
+#if ACROS_USE_IMGUI
+	virtual void drawImgui();
+#endif
+
 protected:
-	AcVector	mPos;
-	AcVector	mRot;
-	AcVector	mScale;
 
-	AcVector    mLookAt;
-
-	//Temp use
-	float		mAngleY;
+	AcTransform mTransform;
 
 	AcMatrix	mModelMat;
-//	AcMatrix    mViewMat;
 
 	class Mesh* mMesh;
 };

@@ -128,7 +128,7 @@ void Mesh::initDraw(Renderer& context,const string& vertStr,const string& fragSt
 	}
 }
 
-void Mesh::draw(Renderer& context,const AcMatrix& mat)
+void Mesh::draw(Renderer& context,const AcMatrix& mvp)
 {
 	glUseProgram(mMaterial->mShaderProgram);
 
@@ -143,8 +143,8 @@ void Mesh::draw(Renderer& context,const AcMatrix& mat)
 		glEnableVertexAttribArray(POSTITION_LOC);
 		glEnableVertexAttribArray(COLOR_LOC);
 
-		const float* mats = glm::value_ptr(glm::identity<glm::mat4>());
-//		const float* mats = glm::value_ptr(mat);
+//		const float* mats = glm::value_ptr(glm::identity<glm::mat4>());
+		const float* mats = glm::value_ptr(mvp);
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
@@ -173,7 +173,7 @@ void Mesh::draw(Renderer& context,const AcMatrix& mat)
 		else if (mShape == ST_Plane)
 			glVertexAttrib4f(COLOR_LOC, 0.7f, 0.7f, 0.7f, 1.0f);
 
-		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mat));
+		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
 
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 

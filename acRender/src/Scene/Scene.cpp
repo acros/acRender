@@ -73,7 +73,6 @@ void Scene::UpdateScene(Renderer& render)
 	ClearScene();
 
 	sCurrenSceneIdx = sSceneSelection;
-	//"Vertex", "FBO", "Light", "Particle", "Texture", "Triangle"
 	switch (sSceneSelection)
 	{
 	case 0:

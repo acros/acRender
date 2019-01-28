@@ -1,6 +1,15 @@
 #include "AcObject.h"
 #include "Render/Mesh.h"
 
+AcObject::AcObject()
+	: mMesh(nullptr) 
+{
+ 	mTransform.rot = glm::identity<glm::quat>();
+ 	mTransform.scale = AcVector(1,1,1);
+	mTransform.translation = AcVector(0);
+}
+
+
 AcObject::~AcObject()
 {
 	if (mMesh != nullptr)
@@ -11,25 +20,17 @@ const AcMatrix& AcObject::getModelMat()
 {
 	mModelMat = glm::identity<glm::mat4>();
 	
-	mModelMat = glm::translate(mModelMat, mPos);
-	mModelMat = glm::rotate(mModelMat, mAngleY, mRot);
-	mModelMat = glm::scale(mModelMat, mScale);
+	mModelMat = glm::translate(mModelMat, mTransform.translation);
+	glm::mat4 RotationMatrix = glm::mat4_cast(mTransform.rot);
+	mModelMat *= RotationMatrix;
+	mModelMat = glm::scale(mModelMat, mTransform.scale);
 
 	return mModelMat;
 }
 
-/*
-const AcMatrix & AcObject::getViewMat()
-{
-	mViewMat = glm::lookAt(mPos, mLookAt, AcVector(0,1,0));
-	return mViewMat;
-}
-*/
-
 void AcObject::rotate(const AcVector& rotAxis, float angle)
 {
-	mRot = rotAxis;
-	mAngleY = angle;
+	mTransform.rot = glm::angleAxis(angle,rotAxis);
 }
 
 void AcObject::initDraw(Renderer& context)
@@ -47,12 +48,17 @@ void AcObject::draw(Renderer& context, const AcMatrix& viewMat,const AcMatrix& p
 		AcMatrix modelview;
 		AcMatrix mvpMatrix;
 
-		// Compute MVP for scene rendering by multiplying the modelview and perspective matrices together
-		modelview = getModelMat() * viewMat;
-		mvpMatrix = modelview * proj;
+		AcMathUtils::printLog(viewMat, "Camera View Mat");
+		AcMathUtils::printLog(proj, "Camera Project Mat");
 
-// 		esMatrixMultiply(&modelview, &getModelMat(), &viewMat);
-// 		esMatrixMultiply(&mvpMatrix, &modelview, &proj);
+		// Compute MVP for scene rendering by multiplying the modelview and perspective matrices together
+		const AcMatrix& m = getModelMat();
+		AcMathUtils::printLog(m, "Triangle Model Mat");
+
+		modelview =  m * viewMat;
+		mvpMatrix = proj * viewMat * m;
+
+		AcMathUtils::printLog(mvpMatrix, "MVP");
 
 		mMesh->draw(context, mvpMatrix);
 	}
@@ -83,3 +89,10 @@ void AcObject::createShape(ShapeType	shape)
 	}
 
 }
+
+#if ACROS_USE_IMGUI
+void AcObject::drawImgui()
+{
+
+}
+#endif

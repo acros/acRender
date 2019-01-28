@@ -23,6 +23,9 @@
     <Filter Include="acRender\Scene">
       <UniqueIdentifier>{e869110f-e615-4848-9e0b-34a72f7801c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="acRender\Math">
+      <UniqueIdentifier>{b9a54bc9-e5c2-452d-9396-4c4753a3f604}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\imgui.cpp">
@@ -50,9 +53,6 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\esShapes.cpp">
-      <Filter>acRender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Base\Math.cpp">
       <Filter>acRender</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Base\AcObject.cpp">
@@ -94,6 +94,9 @@
     <ClCompile Include="..\..\..\src\Scene\VertexScene.cpp">
       <Filter>acRender\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Math\AcMath.cpp">
+      <Filter>acRender\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\imconfig.h">
@@ -119,9 +122,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\utils.h">
       <Filter>sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Base\Math.h">
-      <Filter>acRender</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Base\AcObject.h">
       <Filter>acRender\Base</Filter>
@@ -164,6 +164,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\VertexScene.h">
       <Filter>acRender\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Math\AcTranform.h">
+      <Filter>acRender\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Math\AcMath.h">
+      <Filter>acRender\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
