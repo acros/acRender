@@ -23,6 +23,8 @@ public:
 
 protected:
 
+	void innerDrawTriangle();
+
 	void drawDepthTexture();
 
 protected:

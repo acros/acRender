@@ -10,6 +10,7 @@ enum ShapeType
 {
 	ST_Cube,
 	ST_Plane,
+	ST_ColorTriangle
 };
 
 class Renderer {

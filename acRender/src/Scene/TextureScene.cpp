@@ -1,8 +1,6 @@
 #include "TextureScene.h"
 #include "Base/AcUtils.h"
 
-GLushort rect_indices[] = { 0, 1, 2, 0, 2, 3 };
-
 
 TextureScene::TextureScene(Renderer& renderer)
 	: Scene(renderer)
@@ -76,11 +74,9 @@ void TextureScene::enter()
 	mTexId = createSimpleTexture2D();
 
 	//VBO rely on VAO
-	glGenVertexArrays(1, &mVaoId);
-	glBindVertexArray(mVaoId);
-
-
-	 GLfloat vVertices[] = {
+	glGenVertexArrays(1, &mBaseVAO);
+	glBindVertexArray(mBaseVAO);
+	GLfloat vVertices[] = {
 			-0.5f,  0.5f, 0.0f,  // Position 0
 			0.0f,  0.0f,        // TexCoord 0 
 
@@ -93,14 +89,10 @@ void TextureScene::enter()
 			0.5f,  0.5f, 0.0f,  // Position 3
 			1.0f,  0.0f         // TexCoord 3
 	};
+	GLushort rect_indices[] = { 0, 1, 2, 0, 2, 3 };
 
-
-
-
-
-	glGenBuffers(1, &mPosId);
-	glBindBuffer(GL_ARRAY_BUFFER, mPosId);
-	int sz = sizeof(vVertices);
+	glGenBuffers(1, &mBaseVboIndicesBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);// (GLfloat*)vVertices);
@@ -109,11 +101,9 @@ void TextureScene::enter()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));// offset);
 	glEnableVertexAttribArray(1);//For UV
 
-	/*
-	glGenBuffers(1, &mElemIdx);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemIdx);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rect_indices), rect_indices, GL_STATIC_DRAW);
-	*/
+	glGenBuffers(1, &mBaseVboIndicesBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,  sizeof(rect_indices), rect_indices, GL_STATIC_DRAW);
 
 	GLenum sx = glGetError();
 	if (sx != GL_NO_ERROR)
@@ -132,25 +122,22 @@ void TextureScene::render()
 	glUseProgram(mShaderProgram);
 
 //  glBindVertexArray(mVaoId);
-// 	glBindBuffer(GL_ARRAY_BUFFER, mPosId);
-// 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElemIdx);
+ 	glBindBuffer(GL_ARRAY_BUFFER, mBaseVboIndicesBuffer);
+ 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
 //	glUniform1i(mSampleLocation, 0);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, rect_indices);
-
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 //	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	GLenum sx = glGetError();
-	if (sx != GL_NO_ERROR)
-		logMessage("GL state bind vertex VBO: %d \n", sx);
-
 	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	mRendererRef.endDraw();
 }

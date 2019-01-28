@@ -144,31 +144,9 @@ void LightScene::update(float delta)
 
 void LightScene::render()
 {
-	/*
-		//Render to texture
-	if (mRenderToTexture)
-	{
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
-
-		glViewport(0, 0, 256, 256);
-		glClearColor(0.5f, 0.5f, 0.5f, 0.f);
-
-		// clear depth buffer
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-		mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-		mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-	*/
-
 	glUseProgram(0);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 0.f);
+	glClearColor(0.2f, 0.0f, 0.0f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -184,12 +162,14 @@ void LightScene::render()
 
 void LightScene::exit()
 {
+	Scene::exit();
+
 	glDeleteFramebuffers(1, &mFbo);
 	glDeleteTextures(2, mTexId);
 
-	delete mCam;
-	delete mCube;
-	delete mGround;
+	SAFE_DELETE(mCam);
+	SAFE_DELETE(mCube);
+	SAFE_DELETE(mGround);
 }
 
 void LightScene::drawDepthTexture()

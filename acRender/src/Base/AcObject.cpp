@@ -9,16 +9,11 @@ AcObject::~AcObject()
 
 const AcMatrix& AcObject::getModelMat()
 {
-// 	esMatrixLoadIdentity(&mModelMat);
-// 	esTranslate(&mModelMat, mPos.x, mPos.y, mPos.z);
-// 	esScale(&mModelMat, mScale.x, mScale.y, mScale.z);
-//	esRotate(&mModelMat, mAngleY, mRot.x, mRot.y, mRot.z);
-
-	glm::mat4 newMat = glm::mat4(1.0);
-	mModelMat = newMat;
+	mModelMat = glm::identity<glm::mat4>();
+	
 	mModelMat = glm::translate(mModelMat, mPos);
-	mModelMat = glm::scale(mModelMat,mScale);
-	mModelMat = glm::rotate(mModelMat,mAngleY, mRot);
+	mModelMat = glm::rotate(mModelMat, mAngleY, mRot);
+	mModelMat = glm::scale(mModelMat, mScale);
 
 	return mModelMat;
 }
@@ -69,6 +64,14 @@ void AcObject::createShape(ShapeType	shape)
 	else if (shape == ST_Plane)
 	{
 		mMesh->createPlane();
+	}
+	else if (shape == ST_ColorTriangle)
+	{
+		mMesh->createTriagle();
+	}
+	else
+	{
+		assert(false);
 	}
 
 }

@@ -8,14 +8,15 @@
 
 #include "Scene.hpp"
 
-#include "VertexScene.h"
+#include "SimpleTriangle.h"
 #include "FboScene.h"
 #include "LightScene.h"
 #include "ParticleScene.h"
 #include "TextureScene.h"
 #include "TriangleScene.h"
+#include "VertexScene.h"
 
-const string Scene::SceneList[] = { "Vertex","FBO","Light","Particle","Texture","Triangle", };
+const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
 Scene*	Scene::sShowingScene = NULL;
 int	Scene::sSceneSelection = 0;
 int Scene::sCurrenSceneIdx = -1;
@@ -52,7 +53,8 @@ void Scene::DrawImGui()
 	ImGui::RadioButton(SceneList[2].c_str(), &sSceneSelection, 2); ImGui::SameLine();
 	ImGui::RadioButton(SceneList[3].c_str(), &sSceneSelection, 3);
 	ImGui::RadioButton(SceneList[4].c_str(), &sSceneSelection, 4); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[5].c_str(), &sSceneSelection, 5); //ImGui::SameLine();
+	ImGui::RadioButton(SceneList[5].c_str(), &sSceneSelection, 5); ImGui::SameLine();
+	ImGui::RadioButton(SceneList[6].c_str(), &sSceneSelection, 6); //ImGui::SameLine();
 
 	if (sShowingScene != nullptr)
 	{
@@ -75,7 +77,7 @@ void Scene::UpdateScene(Renderer& render)
 	switch (sSceneSelection)
 	{
 	case 0:
-		sShowingScene = new VertexScene(render);
+		sShowingScene = new SimpleTriangle(render);
 		break;
 	case 1:
 		sShowingScene = new FboScene(render);
@@ -91,6 +93,9 @@ void Scene::UpdateScene(Renderer& render)
 		break;
 	case 5:
 		sShowingScene = new TriangleScene(render);
+		break;
+	case 6:
+		sShowingScene = new VertexScene(render);
 		break;
 	default:
 		assert(false);
@@ -115,6 +120,10 @@ void Scene::ClearScene()
 Scene::Scene(Renderer& render)
 	: mRendererRef(render)
 	, mShaderProgram(0)
+	, mBaseVAO(0)
+	, mBaseVtxBuffer(0)
+	, mBaseColorBuffer(0)
+	, mBaseVboIndicesBuffer(0)
 {
 
 }
@@ -129,7 +138,8 @@ Scene::~Scene()
 
 void Scene::enter()
 {
-	mShaderProgram = mRendererRef.loadShaderProgram(getVertexStr().c_str(), getFragmentStr().c_str());
+	if(!getVertexStr().empty() && !getFragmentStr().empty())
+		mShaderProgram = mRendererRef.loadShaderProgram(getVertexStr().c_str(), getFragmentStr().c_str());
 }
 
 void Scene::update(float delta)
@@ -144,5 +154,13 @@ void Scene::render()
 
 void Scene::exit()
 {
-    
+    if(mBaseVAO != 0)
+		glDeleteVertexArrays(1, &mBaseVAO);
+	if(mBaseVtxBuffer != 0)
+		glDeleteBuffers(1, &mBaseVtxBuffer);
+	if(mBaseColorBuffer != 0)
+		glDeleteBuffers(1, &mBaseColorBuffer);
+	if(mBaseVboIndicesBuffer != 0)
+		glDeleteBuffers(1, &mBaseVboIndicesBuffer);
+
 }

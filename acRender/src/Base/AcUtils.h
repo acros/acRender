@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <cassert>
+#include "utils.h"
 
 #define ACROS_USE_IMGUI	1
 
@@ -19,6 +20,14 @@ int  esGenSquareGrid(int size, GLfloat **vertices, GLuint **indices);
 
 
 #define SAFE_DELETE(N) {if((N)!=nullptr) {delete (N); (N) = nullptr;}}
+
+
+#define ACROS_GL_CHECK_ERROR(N)\
+	{GLenum sx = glGetError();\
+	if(sx != GL_NO_ERROR)\
+		logMessage("GL Check %s : %d \n",(N),sx);\
+	}
+
 
 /*
 #ifdef __cplusplus

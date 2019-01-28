@@ -1,12 +1,14 @@
 #include "FboScene.h"
 #include "Base/AcUtils.h"
 
+
 FboScene::FboScene(Renderer& renderer)
 	: Scene(renderer)
  	, mFbo(0)
 	, mCam(nullptr)
 	, mCube(nullptr)
 	, mGround(nullptr)
+	, mRenderToTexture(false)
 	, mCameraMoveTime(0.f)
 {
 	mTexId[0] = 0;
@@ -98,6 +100,7 @@ void FboScene::enter()
 		GLint texWidth = 256, texHeight = 256;
 
 		glGenFramebuffers(1, &mFbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 		glGenTextures(2, mTexId);
 
 		//Create texture for color attachment
@@ -116,16 +119,48 @@ void FboScene::enter()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexId[0], 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mTexId[1], 0);
 
 		GLenum state = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 		if (state != GL_FRAMEBUFFER_COMPLETE)
-		{
 			assert(false);
-		}
+
+		ACROS_GL_CHECK_ERROR("Texture create");
 	}
+
+	//Rect in left-bottom
+	GLfloat vVertices[] = {
+		-1.0f,  0.0f, 0.0f,  // Position 0
+		0.0f,  0.0f,        // TexCoord 0 
+		-1.0f, -1.0f, 0.0f,  // Position 1
+		0.0f,  1.0f,        // TexCoord 1
+		0.0f, -1.0f, 0.0f,  // Position 2
+		1.0f,  1.0f,        // TexCoord 2
+		0.0f,  0.0f, 0.0f,  // Position 3
+		1.0f,  0.0f         // TexCoord 3
+	};
+	GLushort spe_indices[] = { 0, 1, 2, 0, 2, 3 };
+
+	glGenVertexArrays(1, &mBaseVAO);
+	glBindVertexArray(mBaseVAO);
+
+	glEnableVertexAttribArray(0);//For Vertex
+	glGenBuffers(1, &mBaseVtxBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
+
+	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * (5), vVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat) , 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const void*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);//For UV
+
+	glGenBuffers(1, &mBaseVboIndicesBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLushort), spe_indices, GL_STATIC_DRAW);
+
+	ACROS_GL_CHECK_ERROR("FBO Base Init");
 }
 
 void FboScene::update(float delta)
@@ -152,7 +187,7 @@ void FboScene::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 
 		glViewport(0, 0, 256, 256);
-		glClearColor(0.5f, 0.5f, 0.5f, 0.f);
+		glClearColor(0.5f, 0.8f, 0.5f, 0.f);
 
 		// clear depth buffer
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -165,68 +200,67 @@ void FboScene::render()
 
 	glUseProgram(0);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 0.f);
+	glClearColor(0.1f, .1f, 0.1f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glViewport(0, 0, 800, 600);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-	mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+//	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+//	mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
 
 	//Draw texture to screen 
 	static bool drawScreenMiniWindow = true;
 	if (drawScreenMiniWindow)
 	{
 		glViewport(0, 0, 400, 300);
-		glDisable(GL_DEPTH_TEST);
 
-		glUseProgram(mDefaultProgram);
-
-		//Rect in left-bottom
-		GLfloat vVertices[] = {
-			-1.0f,  0.0f, 0.0f,  // Position 0
-			0.0f,  0.0f,        // TexCoord 0 
-			-1.0f, -1.0f, 0.0f,  // Position 1
-			0.0f,  1.0f,        // TexCoord 1
-			0.0f, -1.0f, 0.0f,  // Position 2
-			1.0f,  1.0f,        // TexCoord 2
-			0.0f,  0.0f, 0.0f,  // Position 3
-			1.0f,  0.0f         // TexCoord 3
-		};
-		GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), vVertices);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), &vVertices[3]);
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mTexId[1]);
-
-		GLuint samplerLoc = glGetUniformLocation(mDefaultProgram, "s_texture");
-		glUniform1i(samplerLoc, 0);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-
-
-		GLenum sx = glGetError();
-		if (sx != GL_NO_ERROR)
-			logMessage("GL state glVertexAttribPointer: %d \n", sx);
-
+		innerDrawTriangle();
 	}
 }
 
+void FboScene::innerDrawTriangle()
+{
+	glDisable(GL_DEPTH_TEST);
+
+	glUseProgram(mDefaultProgram);
+
+	glBindVertexArray(mBaseVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mTexId[1]);
+
+	GLuint samplerLoc = glGetUniformLocation(mDefaultProgram, "s_texture");
+	glUniform1i(samplerLoc, 0);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+//		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	ACROS_GL_CHECK_ERROR("FBO Render");
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+}
+
+
+
+
 void FboScene::exit()
 {
+	Scene::exit();
+
 	glDeleteFramebuffers(1, &mFbo);
 	glDeleteTextures(2, mTexId);
 

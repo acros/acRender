@@ -49,8 +49,15 @@ protected:
 
 	GLuint	mShaderProgram;
 
+	GLuint mBaseVAO;
+	GLuint mBaseVtxBuffer;
+	GLuint mBaseColorBuffer;
+	GLuint mBaseVboIndicesBuffer;
+
 	Renderer&	mRendererRef;
 
+
+private:
 	static class Scene*	sShowingScene;
 	static int sSceneSelection;
 	static int sCurrenSceneIdx;

@@ -3,8 +3,7 @@
 #include "Scene.hpp"
 
 /*
-	Vertex Draw
-	Example for VAO VBO
+	Vertex VBO Draw
 */
 class VertexScene : public Scene
 {
@@ -20,18 +19,6 @@ public:
 
 protected:
 
-	void drawWithVertexArray();
-	void drawWithVBO();
+	class AcObject*	mObj;
 
-	//Only for ES-3.0
-	void drawWithVAO();
-
-protected:
-
-	//For VBO draw
-	GLuint	mVboId;
-	GLuint	mElemVboId;
-
-	//For VAO draw
-	GLuint	mVaoId;
 };

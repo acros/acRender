@@ -204,6 +204,8 @@ void ParticleScene::render()
 
 void ParticleScene::exit()
 {
+	Scene::exit();
+
 	// Delete texture object
 	glDeleteTextures(1, &textureId);
 }

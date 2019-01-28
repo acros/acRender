@@ -15,7 +15,7 @@
 
 #include "Render/Renderer.h"
 #include "Scene/Scene.hpp"
-#include "Scene/VertexScene.h"
+#include "Scene/SimpleTriangle.h"
 #include "Scene/FboScene.h"
 #include "Scene/LightScene.h"
 #include "Scene/ParticleScene.h"

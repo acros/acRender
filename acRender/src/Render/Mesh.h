@@ -10,16 +10,19 @@ public:
 	Mesh();
 	~Mesh();
 
+	void createTriagle();
 	void createCube();
 	void createPlane();
 
-	void initDraw(Renderer& context);
+	void initDraw(Renderer& context, const string& vertStr = "", const string& fragStr = "");
 
 	//Now we just set each mesh has a VBO
 	void draw(Renderer& context,const AcMatrix& mat);
 
 protected:
 	ShapeType	mShape;
+
+	GLuint		mVao;
 
 	GLuint		mVbo[2];
 

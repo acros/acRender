@@ -23,10 +23,4 @@ protected:
 
 	GLint mSampleLocation;
 	GLuint mTexId;
-
-	GLuint mVaoId;
-	GLuint mPosId;
-	GLuint mElemIdx;
-
-
 };

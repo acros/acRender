@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\..\src\Scene\Scene.cpp" />
     <ClCompile Include="..\..\..\src\Scene\TextureScene.cpp" />
     <ClCompile Include="..\..\..\src\Scene\TriangleScene.cpp" />
+    <ClCompile Include="..\..\..\src\Scene\SimpleTriangle.cpp" />
     <ClCompile Include="..\..\..\src\Scene\VertexScene.cpp" />
     <ClCompile Include="..\..\imgui.cpp" />
     <ClCompile Include="..\..\imgui_demo.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\..\..\src\Scene\Scene.hpp" />
     <ClInclude Include="..\..\..\src\Scene\TextureScene.h" />
     <ClInclude Include="..\..\..\src\Scene\TriangleScene.h" />
+    <ClInclude Include="..\..\..\src\Scene\SimpleTriangle.h" />
     <ClInclude Include="..\..\..\src\Scene\VertexScene.h" />
     <ClInclude Include="..\..\imconfig.h" />
     <ClInclude Include="..\..\imgui.h" />
