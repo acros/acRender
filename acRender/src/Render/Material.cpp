@@ -14,7 +14,8 @@ void Material::loadShader(Renderer& context,const string& vert, const string& fr
 		"{                                                 \n"
 		"   v_color = a_color;                             \n"
 		"   gl_Position = u_mvpMatrix * a_position;        \n"
-		"}                                                 \n";
+		"}                                                 \n";
+
 	string fragStr =
 		"#version 450 core                         \n"
 		"in vec4 v_color;                                   \n"
@@ -37,7 +38,8 @@ void Material::loadShader(Renderer& context,const string& vert, const string& fr
 		"{                                                 \n"
 		"   v_color = a_color;                             \n"
 		"   gl_Position = u_mvpMatrix * a_position;        \n"
-		"}                                                 \n";
+		"}                                                 \n";
+
 	string fragStr =
 		"#version 300 es                                    \n"
 		"precision lowp float;                              \n"
@@ -61,21 +63,21 @@ void Material::loadShader(Renderer& context,const string& vert, const string& fr
 
 }
 
+/*
 void Material::loadSimpleShader(Renderer & context)
 {
 	string vert, frag;
 #if USE_OGL_3_LATEST
 	vert =
 		"#version 450 core                         \n"
-		"uniform float u_offset;                    \n"
+		"uniform mat4 u_mvpMatrix;                  \n"
 		"layout(location = 0) in vec4 a_position;   \n"
 		"layout(location = 1) in vec4 a_color;      \n"
 		"out vec4 v_color;\n"
 		"void main()\n"
 		"{\n"
 		"    v_color = a_color;                     \n"
-		"    gl_Position = a_position;              \n"
-		"    gl_Position.x += u_offset;             \n"
+		"   gl_Position = u_mvpMatrix * a_position;        \n"
 		"}\n";
 
 
@@ -114,4 +116,6 @@ void Material::loadSimpleShader(Renderer & context)
 #endif
 
 	mShaderProgram = context.loadShaderProgram(vert.c_str(), frag.c_str());
+	mMvpLoc = glGetUniformLocation(mShaderProgram, "u_mvpMatrix");
 }
+*/

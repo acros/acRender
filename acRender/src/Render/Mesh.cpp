@@ -56,7 +56,7 @@ void Mesh::createTriagle()
 	vertices = vtx;
 	indices = idx;
 	indexSize = 3;
-	vertexSize = 21;
+	vertexSize = 7;
 
 	mMaterial = new Material();
 }
@@ -87,32 +87,32 @@ void Mesh::createPlane()
 
 void Mesh::initDraw(Renderer& context,const string& vertStr,const string& fragStr)
 {
-	if (mShape == ST_ColorTriangle)
-		mMaterial->loadSimpleShader(context);
-	else
+// 	if (mShape == ST_ColorTriangle)
+// 		mMaterial->loadSimpleShader(context);
+// 	else
 		mMaterial->loadShader(context,vertStr, fragStr);
+
+	//VBO rely on VAO
+	glGenVertexArrays(1, &mVao);
+	glBindVertexArray(mVao);
+
+	glGenBuffers(2, mVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
 	if (mShape == ST_ColorTriangle)
 	{
-		//VBO rely on VAO
-		glGenVertexArrays(1, &mVao);
-		glBindVertexArray(mVao);
-
-		glGenBuffers(2, mVbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
 		ACROS_GL_CHECK_ERROR("VBO init");
 
 		//Init VBO (Vertex Buffer Object)
 		glEnableVertexAttribArray(0);//For Vertex
-		glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * (4 + 3), vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
+		glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
 
 		ACROS_GL_CHECK_ERROR("VBO bind vertex");
 
 		GLint offset = sizeof(GLfloat) * 3;
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (3 + 4), (const void*)offset);
+		glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (3 + 4), (const void*)offset);
 
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
@@ -120,10 +120,6 @@ void Mesh::initDraw(Renderer& context,const string& vertStr,const string& fragSt
 	}
 	else
 	{
-		glGenBuffers(2, mVbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
 		glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
@@ -144,16 +140,19 @@ void Mesh::draw(Renderer& context,const AcMatrix& mat)
 
 		ACROS_GL_CHECK_ERROR("VBO bind");
 
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(POSTITION_LOC);
+		glEnableVertexAttribArray(COLOR_LOC);
 
+		const float* mats = glm::value_ptr(glm::identity<glm::mat4>());
+//		const float* mats = glm::value_ptr(mat);
+		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		ACROS_GL_CHECK_ERROR("VBO draw");
 
 		//Close attribute
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(POSTITION_LOC);
+		glDisableVertexAttribArray(COLOR_LOC);
 
 		//Reset VBO
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

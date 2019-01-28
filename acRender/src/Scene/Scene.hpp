@@ -44,11 +44,10 @@ public:
 
 protected:
     
+	//TODO: Refactor  -[Material Params]
 	string	mVertStr;
 	string	mFragStr;
-
 	GLuint	mShaderProgram;
-
 	GLuint mBaseVAO;
 	GLuint mBaseVtxBuffer;
 	GLuint mBaseColorBuffer;

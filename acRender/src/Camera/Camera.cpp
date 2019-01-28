@@ -10,7 +10,7 @@ Camera::Camera(float aspect, float fov, float nearPlane, float farPlane)
 {
 
 	mProjMat = glm::perspective(mFov, mAspect, mNear, mFar);
-	mViewMat = glm::lookAt(mLookAt, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	mViewMat = glm::lookAt(mLookAt, mPos, glm::vec3(0, 1, 0));
 }
 
 Camera::~Camera()
@@ -27,7 +27,7 @@ void Camera::update(float delta)
 const AcMatrix& Camera::getViewMat()
 {
 	mProjMat = glm::perspective(mFov, mAspect, mNear, mFar);
-	mViewMat = glm::lookAt(mLookAt, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	mViewMat = glm::lookAt(mLookAt, mPos, glm::vec3(0, 1, 0));
 
 	return mViewMat;
 }

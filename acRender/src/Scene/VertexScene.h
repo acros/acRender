@@ -20,5 +20,6 @@ public:
 protected:
 
 	class AcObject*	mObj;
+	class Camera*	mCam;
 
 };

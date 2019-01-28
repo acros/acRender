@@ -18,6 +18,14 @@ const AcMatrix& AcObject::getModelMat()
 	return mModelMat;
 }
 
+/*
+const AcMatrix & AcObject::getViewMat()
+{
+	mViewMat = glm::lookAt(mPos, mLookAt, AcVector(0,1,0));
+	return mViewMat;
+}
+*/
+
 void AcObject::rotate(const AcVector& rotAxis, float angle)
 {
 	mRot = rotAxis;
