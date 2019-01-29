@@ -20,10 +20,8 @@ protected:
 
 	bool		mUseElementDraw;
 
-
-	GLuint          mVAO;
-	GLuint          mPosBuffer;
 	GLuint          mColorBuffer;
-	GLuint          mIdxBuffer;
+
+	static const GLushort vertex_indices[];
 
 };

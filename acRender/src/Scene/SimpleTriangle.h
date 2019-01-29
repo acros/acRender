@@ -19,15 +19,4 @@ protected:
 	void drawWithVertexArray();
 	void drawWithVBO();
 
-	//Only for ES-3.0
-	void drawWithVAO();
-
-protected:
-
-	//For VBO draw
-	GLuint	mVboId;
-	GLuint	mElemVboId;
-
-	//For VAO draw
-	GLuint	mVaoId;
 };

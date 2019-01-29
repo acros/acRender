@@ -14,9 +14,8 @@ public:
 	void createCube();
 	void createPlane();
 
-	void initDraw(Renderer& context, const string& vertStr = "", const string& fragStr = "");
+	void initDraw(Renderer& context);
 
-	//Now we just set each mesh has a VBO
 	void draw(Renderer& context,const AcMatrix& mat);
 
 protected:

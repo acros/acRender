@@ -5,7 +5,6 @@
 
 /*
 	The Light scene
-
 */
 class LightScene : public Scene
 {
@@ -30,7 +29,6 @@ protected:
 	void drawDepthTexture();
 
 protected:
-	GLuint		mDefaultProgram;
 
 	bool		mRenderToTexture;
 	GLuint		mFbo;

@@ -11,7 +11,7 @@ public:
 	Material():mMvpLoc(-1), mShaderProgram(-1)
 	{}
 
-	void loadShader(Renderer& context,const string& vert,const string& frag);
+	void loadShader(Renderer& context, const string& file);
 
 	AcUint	mShaderProgram;
 

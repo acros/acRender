@@ -85,9 +85,9 @@ void Mesh::createPlane()
 	mMaterial = new Material();
 }
 
-void Mesh::initDraw(Renderer& context,const string& vertStr,const string& fragStr)
+void Mesh::initDraw(Renderer& context)
 {
-	mMaterial->loadShader(context,vertStr, fragStr);
+	mMaterial->loadShader(context,"");
 
 	//VBO rely on VAO
 	glGenVertexArrays(1, &mVao);

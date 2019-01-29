@@ -7,7 +7,6 @@ LightScene::LightScene(Renderer& renderer)
 	, mCube(nullptr)
 	, mGround(nullptr)
 	, mCameraMoveTime(0.f)
-	, mDefaultProgram(0)
 {
 	mTexId[0] = 0;
 	mTexId[1] = 0;
@@ -157,6 +156,7 @@ void LightScene::render()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
+	//TODO: Shadow Map - Depth Test
 	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
 	mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
 }

@@ -1,8 +1,8 @@
 #include "TriangleScene.h"
 #include "Base/AcUtils.h"
+#include "File/AcFileManager.h"
 
-static const GLushort vertex_indices[] =
-{
+const GLushort TriangleScene::vertex_indices[] = {
 	0, 1, 2,
 };
 
@@ -10,51 +10,8 @@ TriangleScene::TriangleScene(Renderer& renderer)
 	: Scene(renderer)
 	, mUseElementDraw(false)
 {
-#if USE_OGL_3_LATEST
-	mVertStr =
-		"#version 330 core                         \n"
-		"layout(location = 0) in vec4 vPosition;  \n"
-		"layout (location = 1) in vec4 vColor;		\n"
-		"out VS_OUT                                                         \n"
-		"{                                                                  \n"
-		"    vec4 color;                                                    \n"
-		"} vs_out;                                                          \n"
-		"void main()                              \n"
-		"{                                        \n"
-		"    vs_out.color = vColor;      \n"
-		"   gl_Position = vPosition;              \n"
-		"}                                        \n";
-
-	mFragStr =
-		"#version 330 core								\n"
-		"out vec4 fragColor;                          \n"
-		"in VS_OUT                                                                      \n"
-		"{                                                                              \n"
-		"    vec4 color;                                                                \n"
-		"} fs_in;                                                                       \n"
-		"void main()                                  \n"
-		"{                                            \n"
-		"   fragColor = fs_in.color;  \n"
-		"}                                            \n";
-#else
-	mVertStr =
-		"#version 300 es                          \n"
-		"layout(location = 0) in vec4 vPosition;  \n"
-		"layout (location = 1) in vec4 vColor;		\n"
-		"void main()                              \n"
-		"{                                        \n"
-		"   gl_Position = vPosition;              \n"
-		"}                                        \n";
-
-	mFragStr =
-		"#version 300 es                              \n"
-		"precision mediump float;                     \n"
-		"out vec4 fragColor;                          \n"
-		"void main()                                  \n"
-		"{                                            \n"
-		"   fragColor = vColor;  \n"
-		"}                                            \n";
-#endif
+	Acros::FileManager::loadShaderFile("simple_color_2d.vert", mVertStr);
+	Acros::FileManager::loadShaderFile("simple_color_2d.frag", mFragStr);
 }
 
 TriangleScene::~TriangleScene()
@@ -67,8 +24,8 @@ void TriangleScene::enter()
 	Scene::enter();
 #if USE_OGL_3_LATEST
 
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
+	glGenVertexArrays(1, &mBaseVAO);
+	glBindVertexArray(mBaseVAO);
 
 	GLfloat vVertices[] = {
 		0.0f,  1.f, 0.0f,
@@ -83,8 +40,8 @@ void TriangleScene::enter()
 	};
 
 	glEnableVertexAttribArray(0);//For Vertex
-	glGenBuffers(1, &mPosBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, mPosBuffer);
+	glGenBuffers(1, &mBaseVtxBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
@@ -97,8 +54,8 @@ void TriangleScene::enter()
 
 	if (!mUseElementDraw)
 	{
-		glGenBuffers(1, &mIdxBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
+		glGenBuffers(1, &mBaseVboIndicesBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
 	}
 
@@ -112,9 +69,6 @@ void TriangleScene::render()
 	// Use the program object
 	glUseProgram(mShaderProgram);
 
-#if USE_OGL_3_LATEST
-	glUseProgram(mShaderProgram);
-
 	//Warning: After OpenGL 3.3 , VAO is deprecated
 	if (mUseElementDraw)
 	{
@@ -124,21 +78,9 @@ void TriangleScene::render()
 	else
 	{
 		//Use the preset indices , better performance
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIdxBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
-
-#else
-	GLint Posid = 0;
-	glVertexAttribPointer(Posid, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-	glEnableVertexAttribArray(Posid);
-	
-	//the next triangle
-	// 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, vColors);
-	// 	glEnableVertexAttribArray(1);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-#endif
 
 	mRendererRef.endDraw();
 }
@@ -147,8 +89,7 @@ void TriangleScene::exit()
 {
 	Scene::exit();
 
-	glDeleteVertexArrays(1, &mVAO);
-	glDeleteBuffers(1, &mPosBuffer);
+// 	glDeleteVertexArrays(1, &mVAO);
+// 	glDeleteBuffers(1, &mPosBuffer);
 	glDeleteBuffers(1, &mColorBuffer);
-	
 }

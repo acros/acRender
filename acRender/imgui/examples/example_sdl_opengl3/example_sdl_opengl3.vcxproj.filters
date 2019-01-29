@@ -26,6 +26,9 @@
     <Filter Include="acRender\Math">
       <UniqueIdentifier>{b9a54bc9-e5c2-452d-9396-4c4753a3f604}</UniqueIdentifier>
     </Filter>
+    <Filter Include="acRender\File">
+      <UniqueIdentifier>{bd5c4257-eace-4b39-8ad5-1eeb63c8be56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\imgui.cpp">
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\Math\AcMath.cpp">
       <Filter>acRender\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\File\AcFileManager.cpp">
+      <Filter>acRender\File</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\Math\AcMath.h">
       <Filter>acRender\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\File\AcFileManager.h">
+      <Filter>acRender\File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
