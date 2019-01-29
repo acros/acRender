@@ -10,7 +10,6 @@
 #include <SDL.h>
 #include <iostream>
 #include <string>
-#include <SDL_image.h>
 #include "../include/utils.h"
 
 #include "Render/Renderer.h"
@@ -31,19 +30,7 @@
 void logSDLError(std::ostream &os, const std::string &msg) {
     os << msg << " error: " << SDL_GetError() << std::endl;
 }
-/*
- * Loads an image into a texture on the rendering device
- * @param file The image file to load
- * @param ren The renderer to load the texture onto
- * @return the loaded texture, or nullptr if something went wrong.
- */
-SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren) {
-    SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
-    if (texture == nullptr) {
-        logSDLError(std::cout, "LoadTexture");
-    }
-    return texture;
-}
+
 /*
  * Draw an SDL_Texture to an SDL_Renderer at some destination rect
  * taking a clip of the texture if desired
@@ -280,9 +267,6 @@ int main(int, char**)
 
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
-
-    //Add
-    IMG_Quit();
 
     SDL_Quit();
 
