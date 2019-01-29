@@ -13,6 +13,7 @@ public:
 	void createTriagle();
 	void createCube();
 	void createPlane();
+	void createSphere();
 
 	void initDraw(Renderer& context);
 
@@ -22,12 +23,12 @@ protected:
 	ShapeType	mShape;
 
 	GLuint		mVao;
-
 	GLuint		mVbo[2];
 
 	GLuint		vertexSize;
 	GLuint		indexSize;
 
+	GLfloat*	normals;
 	GLfloat*	vertices;
 	GLuint*		indices;
 

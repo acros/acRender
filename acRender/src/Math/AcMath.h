@@ -11,6 +11,9 @@
 
 typedef glm::mat4 AcMatrix;
 typedef glm::vec3 AcVector;
+typedef glm::vec3 AcColor3;
+typedef glm::vec4 AcVector4;
+typedef glm::vec4 AcColor4;
 typedef glm::quat AcQuat;
 
 // AcMatrix MatIdentiy = glm::identity<glm::mat4>();

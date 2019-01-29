@@ -19,6 +19,7 @@ GLuint idx[3] = { 0, 1, 2 };
 Mesh::Mesh() 
 	: vertices(nullptr)
 	, indices(nullptr)
+	, normals(nullptr)
 	, vertexSize(0)
 	, indexSize(0)
 	, mMaterial(nullptr)
@@ -85,9 +86,21 @@ void Mesh::createPlane()
 	mMaterial = new Material();
 }
 
+void Mesh::createSphere()
+{
+	mShape = ST_Sphere;
+
+	int numSlices = 40;
+	indexSize = esGenSphere(numSlices,1.0f, &vertices, &normals, NULL, &indices);
+	int numParallels = numSlices / 2;
+	vertexSize = (numParallels + 1) * (numSlices + 1);
+
+	mMaterial = new Material();
+}
+
 void Mesh::initDraw(Renderer& context)
 {
-	mMaterial->loadShader(context,"");
+	mMaterial->initShader(context,"","");
 
 	//VBO rely on VAO
 	glGenVertexArrays(1, &mVao);
@@ -99,14 +112,10 @@ void Mesh::initDraw(Renderer& context)
 
 	if (mShape == ST_ColorTriangle)
 	{
-		ACROS_GL_CHECK_ERROR("VBO init");
-
 		//Init VBO (Vertex Buffer Object)
-		glEnableVertexAttribArray(0);//For Vertex
+		glEnableVertexAttribArray(0);
 		glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
 		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
-
-		ACROS_GL_CHECK_ERROR("VBO bind vertex");
 
 		GLint offset = sizeof(GLfloat) * 3;
 		glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (3 + 4), (const void*)offset);
@@ -131,11 +140,10 @@ void Mesh::draw(Renderer& context,const AcMatrix& mvp)
 
 	if (mShape == ST_ColorTriangle)
 	{
+		//Vertex Color
 		glBindVertexArray(mVao);
 		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
-		ACROS_GL_CHECK_ERROR("VBO bind");
 
 		glEnableVertexAttribArray(POSTITION_LOC);
 		glEnableVertexAttribArray(COLOR_LOC);
@@ -144,37 +152,55 @@ void Mesh::draw(Renderer& context,const AcMatrix& mvp)
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
-		ACROS_GL_CHECK_ERROR("VBO draw");
-
-		//Close attribute
 		glDisableVertexAttribArray(POSTITION_LOC);
 		glDisableVertexAttribArray(COLOR_LOC);
 
-		//Reset VBO
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	}
-	else
+	else if (mShape == ST_Sphere)
 	{
-		//Render a cube
+		//TODO:
+
 		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
-		glEnableVertexAttribArray(POSTITION_LOC);	// Pos
-		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, (3 /*+ 2*/) * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
+		glEnableVertexAttribArray(POSTITION_LOC);
+		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
 
-		if (mShape == ST_Cube)
-			glVertexAttrib4f(COLOR_LOC, 0.8f, 0.6f, 0.0f, 1.0f);		//Set the color to a Const value
-		else if (mShape == ST_Plane)
-			glVertexAttrib4f(COLOR_LOC, 0.7f, 0.7f, 0.7f, 1.0f);
+		glVertexAttrib4f(COLOR_LOC, 0.5f, 0.3f, 0.7f, 1.0f);
 
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
 
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 
-		glDisableVertexAttribArray(POSTITION_LOC);	// Pos
-		glDisableVertexAttribArray(COLOR_LOC);	// Color
+		glDisableVertexAttribArray(POSTITION_LOC);
+		glDisableVertexAttribArray(COLOR_LOC);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+	else
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
+
+		glEnableVertexAttribArray(POSTITION_LOC);	
+		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
+
+		if (mShape == ST_Cube)
+			glVertexAttrib4f(COLOR_LOC, 0.8f, 0.6f, 0.0f, 1.0f);		//Set the color to a Const value
+		else if (mShape == ST_Plane)
+			glVertexAttrib4f(COLOR_LOC, 0.7f, 0.7f, 0.7f, 1.0f);
+		else
+			assert(false);
+
+		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+
+		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
+
+		glDisableVertexAttribArray(POSTITION_LOC);	
+		glDisableVertexAttribArray(COLOR_LOC);	
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

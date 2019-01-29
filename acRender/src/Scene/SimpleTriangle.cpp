@@ -81,7 +81,7 @@ void SimpleTriangle::drawWithVBO()
 {
 	glUseProgram(mShaderProgram);
 
-	float offsetLoc = glGetUniformLocation(mShaderProgram, "u_offset");
+	GLint offsetLoc = glGetUniformLocation(mShaderProgram, "u_offset");
 	glUniform1f(offsetLoc, 0.5f);
 
 	glBindVertexArray(mBaseVAO);

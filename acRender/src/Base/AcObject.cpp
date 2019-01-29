@@ -42,21 +42,23 @@ void AcObject::createShape(ShapeType	shape)
 
 	mMesh = new Mesh();
 
-	if (shape == ST_Cube)
+	switch (shape)
 	{
+	case ST_Cube:
 		mMesh->createCube();
-	}
-	else if (shape == ST_Plane)
-	{
+		break;
+	case ST_Plane:
 		mMesh->createPlane();
-	}
-	else if (shape == ST_ColorTriangle)
-	{
+		break;
+	case ST_ColorTriangle:
 		mMesh->createTriagle();
-	}
-	else
-	{
+		break;
+	case ST_Sphere:
+		mMesh->createSphere();
+		break;
+	default:
 		assert(false);
+		break;
 	}
 
 }

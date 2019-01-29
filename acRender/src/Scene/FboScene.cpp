@@ -201,7 +201,7 @@ void FboScene::render()
 
 		glViewport(0, 0, 256, 256);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		const GLfloat color[]{ 0.1,0.3,0.1};
+		const GLfloat color[]{ 0.1f,0.3f,0.1f};
 		glClearBufferfv(GL_COLOR, 0, color);
 		glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 

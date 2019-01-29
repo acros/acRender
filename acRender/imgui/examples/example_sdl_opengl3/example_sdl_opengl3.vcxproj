@@ -166,6 +166,7 @@ xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E</Command>
     <ClCompile Include="..\..\..\src\esShapes.cpp" />
     <ClCompile Include="..\..\..\src\File\AcFileManager.cpp" />
     <ClCompile Include="..\..\..\src\Math\AcMath.cpp" />
+    <ClCompile Include="..\..\..\src\Render\AcLight.cpp" />
     <ClCompile Include="..\..\..\src\Render\Material.cpp" />
     <ClCompile Include="..\..\..\src\Render\Mesh.cpp" />
     <ClCompile Include="..\..\..\src\Render\Renderer.cpp" />
@@ -194,6 +195,7 @@ xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E</Command>
     <ClInclude Include="..\..\..\src\File\AcFileManager.h" />
     <ClInclude Include="..\..\..\src\Math\AcMath.h" />
     <ClInclude Include="..\..\..\src\Math\AcTranform.h" />
+    <ClInclude Include="..\..\..\src\Render\AcLight.h" />
     <ClInclude Include="..\..\..\src\Render\Material.h" />
     <ClInclude Include="..\..\..\src\Render\Mesh.h" />
     <ClInclude Include="..\..\..\src\Render\Renderer.h" />

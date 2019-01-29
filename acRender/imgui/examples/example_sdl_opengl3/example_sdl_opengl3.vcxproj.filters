@@ -103,6 +103,9 @@
     <ClCompile Include="..\..\..\src\File\AcFileManager.cpp">
       <Filter>acRender\File</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\AcLight.cpp">
+      <Filter>acRender\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\imconfig.h">
@@ -179,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\File\AcFileManager.h">
       <Filter>acRender\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\AcLight.h">
+      <Filter>acRender\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

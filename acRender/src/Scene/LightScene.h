@@ -24,15 +24,10 @@ public:
 	virtual void renderImgui();
 #endif 
 
-protected:
-
-	void drawDepthTexture();
 
 protected:
 
-	bool		mRenderToTexture;
-	GLuint		mFbo;
-	GLuint		mTexId[2];
+//	GLuint		mFbo;
 
 	float		mCameraMoveTime;
 

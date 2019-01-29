@@ -1,4 +1,5 @@
-#version 330 core			
+#version 330 core		
+precision lowp float;          	
 out vec4 fragColor;        
 in VS_OUT                  
 {                          

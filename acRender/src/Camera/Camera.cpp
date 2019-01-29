@@ -9,7 +9,7 @@ Camera::Camera(float aspect, float fov, float nearPlane, float farPlane)
 	, mUp (0.0f, 1.0f, 0.0f)
 	, mViewMatDirty(true)
 {
-	mProjMat = glm::perspective(mFov, mAspect, mNear, mFar);
+	mProjMat = glm::perspective(glm::radians(mFov), mAspect, mNear, mFar);
 }
 
 Camera::~Camera()
