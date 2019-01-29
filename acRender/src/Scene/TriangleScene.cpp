@@ -151,6 +151,4 @@ void TriangleScene::exit()
 	glDeleteBuffers(1, &mPosBuffer);
 	glDeleteBuffers(1, &mColorBuffer);
 	
-//	glDeleteFramebuffers(1, &mFBO);
-
 }

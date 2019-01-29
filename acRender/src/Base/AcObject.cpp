@@ -4,11 +4,8 @@
 AcObject::AcObject()
 	: mMesh(nullptr) 
 {
- 	mTransform.rot = glm::identity<glm::quat>();
- 	mTransform.scale = AcVector(1,1,1);
-	mTransform.translation = AcVector(0);
-}
 
+}
 
 AcObject::~AcObject()
 {
@@ -16,21 +13,9 @@ AcObject::~AcObject()
 		delete mMesh;
 }
 
-const AcMatrix& AcObject::getModelMat()
-{
-	mModelMat = glm::identity<glm::mat4>();
-	
-	mModelMat = glm::translate(mModelMat, mTransform.translation);
-	glm::mat4 RotationMatrix = glm::mat4_cast(mTransform.rot);
-	mModelMat *= RotationMatrix;
-	mModelMat = glm::scale(mModelMat, mTransform.scale);
-
-	return mModelMat;
-}
-
 void AcObject::rotate(const AcVector& rotAxis, float angle)
 {
-	mTransform.rot = glm::angleAxis(angle,rotAxis);
+	mTransform.setRotation(glm::angleAxis(angle,rotAxis));
 }
 
 void AcObject::initDraw(Renderer& context)
@@ -45,22 +30,8 @@ void AcObject::draw(Renderer& context, const AcMatrix& viewMat,const AcMatrix& p
 {
 	if (mMesh != nullptr)
 	{
-		AcMatrix modelview;
-		AcMatrix mvpMatrix;
-
-		AcMathUtils::printLog(viewMat, "Camera View Mat");
-		AcMathUtils::printLog(proj, "Camera Project Mat");
-
-		// Compute MVP for scene rendering by multiplying the modelview and perspective matrices together
-		const AcMatrix& m = getModelMat();
-		AcMathUtils::printLog(m, "Triangle Model Mat");
-
-		modelview =  m * viewMat;
-		mvpMatrix = proj * viewMat * m;
-
-		AcMathUtils::printLog(mvpMatrix, "MVP");
-
-		mMesh->draw(context, mvpMatrix);
+		const AcMatrix& m = mTransform.getModelMat();
+		mMesh->draw(context, proj * viewMat * m);
 	}
 }
 

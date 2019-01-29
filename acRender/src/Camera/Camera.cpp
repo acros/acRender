@@ -7,7 +7,7 @@ Camera::Camera(float aspect, float fov, float nearPlane, float farPlane)
 	, mFar(farPlane)
 	, mLookAt(0.f,0.f,0.f)
 	, mUp (0.0f, 1.0f, 0.0f)
-	, mViewMatDirty(false)
+	, mViewMatDirty(true)
 {
 	mProjMat = glm::perspective(mFov, mAspect, mNear, mFar);
 }
@@ -35,15 +35,17 @@ void Camera::setPersp(float aspect, float fov, float nearPlane, float farPlane)
 
 void Camera::setViewMat(const AcVector& pos, const AcVector& target, const AcVector& up)
 {
-	mTransform.translation = pos;
+	mTransform.setTranslation(pos);
 	mLookAt = target;
 	mUp = up;
-	mViewMat = glm::lookAt(mTransform.translation, mLookAt, mUp);
+	mViewMat = glm::lookAt(mTransform.getTranslation(), mLookAt, mUp);
+	mViewMatDirty = false;
 }
 
 const AcMatrix& Camera::getViewMat()
 {
-	mViewMat = glm::lookAt(mTransform.translation, mLookAt, mUp);
+	//If cache this , need cache translation
+	mViewMat = glm::lookAt(mTransform.getTranslation(), mLookAt, mUp);
 	return mViewMat;
 }
 

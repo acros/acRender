@@ -1,6 +1,7 @@
+#include <string>
 #include "AcMath.h"
 #include "Base/AcUtils.h"
-#include "string"
+#include "AcTranform.h"
 
 #define ACROS_PRINT_DEBUG_INFO 0
 
@@ -15,4 +16,25 @@ void AcMathUtils::printLog(const AcMatrix& mat,const std::string& prefix)
 	}
 	logMessage("\n");
 #endif
+}
+
+const AcMatrix AcTransform::MatIdentity = glm::identity<glm::mat4>();
+const AcVector AcTransform::VecOne = AcVector(1);
+const AcVector AcTransform::VecZero = AcVector(0);
+const AcVector AcTransform::VecX = AcVector(1,0,0);
+const AcVector AcTransform::VecY = AcVector(0,1,0);
+const AcVector AcTransform::VecZ = AcVector(0,0,1);
+
+const AcMatrix& AcTransform::getModelMat()
+{
+	if (isModelMatrixDirty)
+	{
+		modelMatrix = glm::translate(MatIdentity, getTranslation());
+		glm::mat4 RotationMatrix = glm::mat4_cast(getRotation());
+		modelMatrix *= RotationMatrix;
+		modelMatrix = glm::scale(modelMatrix, getScale());
+		isModelMatrixDirty = false;
+	}
+
+	return modelMatrix;
 }

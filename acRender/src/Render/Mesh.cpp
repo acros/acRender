@@ -87,10 +87,7 @@ void Mesh::createPlane()
 
 void Mesh::initDraw(Renderer& context,const string& vertStr,const string& fragStr)
 {
-// 	if (mShape == ST_ColorTriangle)
-// 		mMaterial->loadSimpleShader(context);
-// 	else
-		mMaterial->loadShader(context,vertStr, fragStr);
+	mMaterial->loadShader(context,vertStr, fragStr);
 
 	//VBO rely on VAO
 	glGenVertexArrays(1, &mVao);
@@ -143,7 +140,6 @@ void Mesh::draw(Renderer& context,const AcMatrix& mvp)
 		glEnableVertexAttribArray(POSTITION_LOC);
 		glEnableVertexAttribArray(COLOR_LOC);
 
-//		const float* mats = glm::value_ptr(glm::identity<glm::mat4>());
 		const float* mats = glm::value_ptr(mvp);
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

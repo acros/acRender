@@ -25,11 +25,10 @@ protected:
 	float		mFov;
 	float		mAspect;
 
-	bool		mViewMatDirty;
-
 	AcVector	mLookAt;
 	AcVector	mUp;
 
+	bool		mViewMatDirty;
 	AcMatrix	mViewMat;
 	AcMatrix	mProjMat;
 };

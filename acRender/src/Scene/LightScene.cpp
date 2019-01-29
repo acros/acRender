@@ -71,7 +71,7 @@ void LightScene::enter()
 	//Set camera 
 	mCam = new Camera(800/600.f,45.f,1.f,1000.f);
 	AcVector eyePos(-10.f, 3.f, 10.f);
-	mCam->setPosition(eyePos);
+	mCam->setViewMat(eyePos, AcVector(0, 0, -3), AcVector(0, 1, 0));
 	const AcMatrix& vieMat = mCam->getViewMat();
 
 	mCube = new AcObject();
@@ -85,9 +85,12 @@ void LightScene::enter()
 
 	// Center the ground
 	mGround = new AcObject();
-	mGround->setPosition(AcVector(-8.0f, -2.f, -8.0f));
-	mGround->setScale(AcVector(10.0f, 10.0f, 10.0f));
-	mGround->rotate(AcVector(1.0f, 0.0f, 0.0f), -90.0f);
+	AcTransform& transGround = mGround->GetTransform();
+	transGround.setTranslation(AcVector(-5.0f, -1.0f, -10.0f));
+	transGround.setScale(AcVector(10.0f, 10.0f, 10.0f));
+
+	AcQuat quat = glm::angleAxis(glm::radians(90.0f), AcTransform::VecX);
+	mGround->GetTransform().setRotation(quat); 
 
 	mGround->createShape(ShapeType::ST_Plane);
 	mGround->initDraw(mRendererRef);
@@ -151,7 +154,6 @@ void LightScene::render()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glViewport(0, 0, 800, 600);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -171,6 +173,22 @@ void LightScene::exit()
 	SAFE_DELETE(mCube);
 	SAFE_DELETE(mGround);
 }
+
+#if ACROS_USE_IMGUI
+void LightScene::renderImgui()
+{
+// 	static AcVector rot;
+// 	static float angle = 0;
+// 	ImGui::SliderFloat("Angle",&angle, 0, 360);
+// 	ImGui::SliderFloat("X", &rot.x, -50, 50);
+// 	ImGui::SliderFloat("Y", &rot.y, -50, 50);
+// 	ImGui::SliderFloat("Z", &rot.z, -50, 50);
+// 	mGround->GetTransform().setTranslation(rot);
+
+//	AcQuat quat = glm::angleAxis(glm::radians(angle), rot);
+//	mGround->GetTransform().setRotation(quat);
+}
+#endif
 
 void LightScene::drawDepthTexture()
 {

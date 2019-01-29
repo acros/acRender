@@ -13,8 +13,6 @@ public:
 
 	void loadShader(Renderer& context,const string& vert,const string& frag);
 
-//	void loadSimpleShader(Renderer& context);
-
 	AcUint	mShaderProgram;
 
 	//default value

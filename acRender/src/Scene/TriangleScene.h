@@ -26,5 +26,4 @@ protected:
 	GLuint          mColorBuffer;
 	GLuint          mIdxBuffer;
 
-//	GLuint mFBO;
 };

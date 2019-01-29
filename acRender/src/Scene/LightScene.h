@@ -21,6 +21,10 @@ public:
 
 	virtual void exit()override;
 
+#if ACROS_USE_IMGUI
+	virtual void renderImgui();
+#endif 
+
 protected:
 
 	void drawDepthTexture();

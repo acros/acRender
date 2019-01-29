@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Render/Renderer.h"
-#include "Math/AcTranform.h"
 #include "Base/AcUtils.h"
 
 //The basic object
@@ -10,15 +9,12 @@ public:
 	AcObject();
 	virtual ~AcObject();
 
-	const AcMatrix&	getModelMat();
+	void setPosition(const AcVector& pos) { mTransform.setTranslation(pos); }
+	void setScale(const AcVector& scale) { mTransform.setScale(scale); }
+	void setRotation(const AcVector& rot) { mTransform.setRotation(rot); }
 
-	const AcVector&	getPosition()const { return mTransform.translation; }
-	const AcVector&	getScale()const { return mTransform.scale; }
-	const AcQuat&	getRotation()const { return mTransform.rot; }
-
-	void setPosition(const AcVector& pos) { mTransform.translation = pos; }
-	void setScale(const AcVector& scale) { mTransform.scale = scale; }
-	void setRotation(const AcVector& rot) { mTransform.rot = rot; }
+	AcTransform& GetTransform() { return mTransform; }
+	const AcTransform& GetTransform()const { return mTransform; }
 
 	void rotate(const AcVector& rotAxis, float angle);
 
@@ -39,8 +35,6 @@ public:
 protected:
 
 	AcTransform mTransform;
-
-	AcMatrix	mModelMat;
 
 	class Mesh* mMesh;
 };
