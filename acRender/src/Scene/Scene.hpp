@@ -50,7 +50,6 @@ protected:
 	GLuint	mShaderProgram;
 	GLuint mBaseVAO;
 	GLuint mBaseVtxBuffer;
-	GLuint mBaseColorBuffer;
 	GLuint mBaseVboIndicesBuffer;
 
 	Renderer&	mRendererRef;

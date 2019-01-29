@@ -13,8 +13,10 @@ GLfloat vertices[3 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE)] =
 {
 	0.0f,  0.5f, 0.0f,        // v0
 	1.0f,  0.0f, 0.0f, 1.0f,  // c0
+
 	-0.5f, -0.5f, 0.0f,       // v1
 	0.0f,  1.0f, 0.0f, 1.0f,  // c1
+
 	0.5f, -0.5f, 0.0f,        // v2
 	0.0f,  0.0f, 1.0f, 1.0f,  // c2
 };

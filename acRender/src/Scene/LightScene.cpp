@@ -142,7 +142,6 @@ void LightScene::update(float delta)
 	z *= cos(mCameraMoveTime);
 	mCam->setPosition(AcVector(x,y,z));
 	mCameraMoveTime += (0.5f * delta);
-
 }
 
 void LightScene::render()

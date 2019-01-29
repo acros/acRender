@@ -25,11 +25,9 @@ protected:
 
 	void innerDrawTriangle();
 
-	void drawDepthTexture();
+	void testMiniDraw();
 
 protected:
-	GLuint		mDefaultProgram;
-
 	bool		mRenderToTexture;
 	GLuint		mFbo;
 	GLuint		mTexId[2];

@@ -18,7 +18,7 @@
 
 const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
 Scene*	Scene::sShowingScene = NULL;
-int	Scene::sSceneSelection = 0;
+int	Scene::sSceneSelection = 1;
 int Scene::sCurrenSceneIdx = -1;
 
 #if ACROS_USE_IMGUI
@@ -121,7 +121,6 @@ Scene::Scene(Renderer& render)
 	, mShaderProgram(0)
 	, mBaseVAO(0)
 	, mBaseVtxBuffer(0)
-	, mBaseColorBuffer(0)
 	, mBaseVboIndicesBuffer(0)
 {
 
@@ -157,8 +156,6 @@ void Scene::exit()
 		glDeleteVertexArrays(1, &mBaseVAO);
 	if(mBaseVtxBuffer != 0)
 		glDeleteBuffers(1, &mBaseVtxBuffer);
-	if(mBaseColorBuffer != 0)
-		glDeleteBuffers(1, &mBaseColorBuffer);
 	if(mBaseVboIndicesBuffer != 0)
 		glDeleteBuffers(1, &mBaseVboIndicesBuffer);
 
