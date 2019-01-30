@@ -21,7 +21,7 @@ public:
 	virtual void update(float delta)	{}
 	
 	void initDraw(Renderer& context);
-	virtual void draw(Renderer& context, const AcMatrix& viewMat,const AcMatrix& proj);
+	virtual void draw(Renderer& context, class Camera* cam,class Light* l = nullptr);
 
 	const class Mesh* getMesh()const { return mMesh; }
 

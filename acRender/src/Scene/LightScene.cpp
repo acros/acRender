@@ -6,6 +6,7 @@ LightScene::LightScene(Renderer& renderer)
 	, mCube(nullptr)
 	, mGround(nullptr)
 	, mCameraMoveTime(0.f)
+	, mDirLight(Acros::Directional,AcVector(1,-1,1),AcColor3(0.5f,0.5f,0.5f))
 {}
 
 LightScene::~LightScene()
@@ -26,18 +27,16 @@ void LightScene::enter()
 	mCube = new AcObject();
 	mCube->setPosition(AcVector(0.0f, 0.f, 0.0f));
 	mCube->rotate(AcVector(0.0f, 1.0f, 0.0f),-15.f);
-
 	mCube->createShape(ShapeType::ST_Sphere);
 	mCube->initDraw(mRendererRef);
 
 	// Center the ground
 	mGround = new AcObject();
 	AcTransform& transGround = mGround->GetTransform();
-	transGround.setTranslation(AcVector(-5.0f, -1.5f, -5.0f));
-	transGround.setScale(AcVector(10.f, 10.0f, 10.0f));
-
+	transGround.setTranslation(AcVector(-5.0f, -1.0f, -5.0f));
+	transGround.setScale(AcVector(10.0f, 10.0f, 10.0f));
 	AcQuat quat = glm::angleAxis(glm::radians(90.0f), AcTransform::VecX);
-	mGround->GetTransform().setRotation(quat); 
+	mGround->GetTransform().setRotation(quat);
 
 	mGround->createShape(ShapeType::ST_Plane);
 	mGround->initDraw(mRendererRef);
@@ -67,8 +66,8 @@ void LightScene::render()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-	mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+	mCube->draw(mRendererRef, mCam);
+	mGround->draw(mRendererRef, mCam);
 }
 
 void LightScene::exit()
@@ -83,15 +82,12 @@ void LightScene::exit()
 #if ACROS_USE_IMGUI
 void LightScene::renderImgui()
 {
-	static AcVector rot;
-	static float angle = 0;
-//	ImGui::SliderFloat("Angle",&angle, 0, 360);
-// 	ImGui::SliderFloat("X", &rot.x, -50, 50);
-// 	ImGui::SliderFloat("Y", &rot.y, -50, 50);
-// 	ImGui::SliderFloat("Z", &rot.z, -50, 50);
-// 	mGround->GetTransform().setTranslation(rot);
+	static AcVector LDIR(1, -1, 1);
+	ImGui::SliderFloat("X", &LDIR.x, -1, 1);
+	ImGui::SliderFloat("Y", &LDIR.y, -1, 1);
+	ImGui::SliderFloat("Z", &LDIR.z, -1, 1);
+ 	mDirLight.setDir(LDIR);
 
 // 	AcQuat quat = glm::angleAxis(glm::radians(angle), rot);
-// 	mGround->GetTransform().setRotation(quat);
 }
 #endif

@@ -22,7 +22,7 @@
 /// \return The number of indices required for rendering the buffers (the number of indices stored in the indices array
 ///         if it is not NULL ) as a GL_TRIANGLE_STRIP
 //
-int esGenSphere ( int numSlices, float radius, GLfloat **vertices, GLfloat **normals,
+int esGenSphere(int numSlices, float radius, GLfloat **vertices, GLfloat **normals, GLfloat **colors,
                              GLfloat **texCoords, GLuint **indices )
 {
    int i;
@@ -41,6 +41,11 @@ int esGenSphere ( int numSlices, float radius, GLfloat **vertices, GLfloat **nor
    if ( normals != NULL )
    {
       *normals = (GLfloat*)malloc ( sizeof ( GLfloat ) * 3 * numVertices );
+   }
+
+   if (colors != nullptr)
+   {
+	   *colors = (GLfloat*)malloc(sizeof(GLfloat) * 3 * numVertices);
    }
 
    if ( texCoords != NULL )
@@ -74,6 +79,14 @@ int esGenSphere ( int numSlices, float radius, GLfloat **vertices, GLfloat **nor
             ( *normals ) [vertex + 1] = ( *vertices ) [vertex + 1] / radius;
             ( *normals ) [vertex + 2] = ( *vertices ) [vertex + 2] / radius;
          }
+
+		 if (colors)
+		 {
+			 //RGB
+			 (*colors)[vertex + 0] = 0.5f;
+			 (*colors)[vertex + 1] = 0.0f;
+			 (*colors)[vertex + 2] = 0.0f;
+		 }
 
          if ( texCoords )
          {

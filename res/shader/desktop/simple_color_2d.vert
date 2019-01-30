@@ -8,5 +8,5 @@ out VS_OUT
 void main()                            
 {                                      
     vs_out.color = vColor;				
-   gl_Position = vPosition;            
+	gl_Position = vPosition;            
 }                                      

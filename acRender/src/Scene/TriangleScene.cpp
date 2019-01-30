@@ -24,9 +24,6 @@ void TriangleScene::enter()
 	Scene::enter();
 #if USE_OGL_3_LATEST
 
-	glGenVertexArrays(1, &mBaseVAO);
-	glBindVertexArray(mBaseVAO);
-
 	GLfloat vVertices[] = {
 		0.0f,  1.f, 0.0f,
 		-0.5f, -0.5f, 0.0f,
@@ -39,18 +36,22 @@ void TriangleScene::enter()
 		0.0f, 0.0f,1.0f,
 	};
 
+	glGenVertexArrays(1, &mBaseVAO);
+	glBindVertexArray(mBaseVAO);
+
 	glEnableVertexAttribArray(0);//For Vertex
 	glGenBuffers(1, &mBaseVtxBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
-
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
+
+//	glVertexAttrib4f(1, 0.5f, 0.3f, 0.7f, 1.0f);
 
 	glEnableVertexAttribArray(1);//For Color
 	glGenBuffers(1, &mColorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vColors), vColors, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),NULL /*(GLvoid *)(3 * sizeof(GLfloat))*/);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),NULL);
 
 	if (!mUseElementDraw)
 	{
@@ -73,7 +74,7 @@ void TriangleScene::render()
 	if (mUseElementDraw)
 	{
 		//Always update the indices
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, vertex_indices);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
 	}
 	else
 	{

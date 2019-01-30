@@ -34,7 +34,7 @@ void VertexScene::render()
 {
 	mRendererRef.beginDraw();
 
-	mObj->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+	mObj->draw(mRendererRef, mCam);
 
 	mRendererRef.endDraw();
 }

@@ -33,7 +33,7 @@ FboScene::FboScene(Renderer& renderer)
 		"layout(location = 0) out vec4 outColor;             \n"
 		"void main()                                         \n"
 		"{                                                   \n"
-		"  outColor = texture( s_texture, vec2(v_texCoord.x,v_texCoord.y ));      \n"
+		"  outColor = texture( s_texture, vec2(v_texCoord.x,1.0 - v_texCoord.y ));      \n"
 		"}                                                   \n";
 #else
 	mVertStr =
@@ -96,16 +96,16 @@ void FboScene::enter()
 
 
 	GLfloat vVertices[] = {
-			-0.5f,  0.5f, 0.0f,  // Position 0
-			0.5f,  0.0f,        // TexCoord 0 
+			-1.f,  1, 0.0f,  // Position 0
+			0.0f,  0.0f,        // TexCoord 0 
 
-			-0.5f, -0.5f, 0.0f,  // Position 1
+			-1.f, -1, 0.0f,  // Position 1
 			0.0f,  1.0f,        // TexCoord 1
 
-			0.5f, -0.5f, 0.0f,  // Position 2
+			1.0f, -1, 0.0f,  // Position 2
 			1.0f,  1.0f,        // TexCoord 2
 
-			0.5f,  0.5f, 0.0f,  // Position 3
+			1.0f,  1, 0.0f,  // Position 3
 			1.0f,  0.0f         // TexCoord 3
 	};
 	GLushort rect_indices[] = { 0, 1, 2, 0, 2, 3 };
@@ -206,8 +206,8 @@ void FboScene::render()
 		glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 
 		// clear depth buffer
-		mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-		mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+		mCube->draw(mRendererRef, mCam);
+		mGround->draw(mRendererRef, mCam);
 
 		ACROS_GL_CHECK_ERROR("Render to texture");
 
@@ -224,8 +224,8 @@ void FboScene::render()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
-	mGround->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+	mCube->draw(mRendererRef, mCam);
+	mGround->draw(mRendererRef, mCam);
 
 	static bool drawScreenMiniWindow = true;
 	if (drawScreenMiniWindow && mRenderToTexture)
@@ -249,7 +249,7 @@ void FboScene::testMiniDraw()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	mCube->draw(mRendererRef, mCam->getViewMat(), mCam->getProjMat());
+	mCube->draw(mRendererRef, mCam);
 
 }
 
@@ -277,8 +277,6 @@ void FboScene::innerDrawTriangle()
 //	glUniform1i(samplerLoc, 0);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
-
-	ACROS_GL_CHECK_ERROR("FBO Render");
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);

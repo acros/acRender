@@ -1,5 +1,7 @@
 #include "AcObject.h"
 #include "Render/Mesh.h"
+#include "Render/AcLight.h"
+#include "Camera/Camera.h"
 
 AcObject::AcObject()
 	: mMesh(nullptr) 
@@ -26,12 +28,13 @@ void AcObject::initDraw(Renderer& context)
 	}
 }
 
-void AcObject::draw(Renderer& context, const AcMatrix& viewMat,const AcMatrix& proj)
+void AcObject::draw(Renderer& context, Camera* cam, Light* l)
 {
 	if (mMesh != nullptr)
 	{
 		const AcMatrix& m = mTransform.getModelMat();
-		mMesh->draw(context, proj * viewMat * m);
+		
+		mMesh->draw(context, cam->getProjMat() * cam->getViewMat() * m,l);
 	}
 }
 

@@ -1,17 +1,15 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include "Renderer.h"
 
 using namespace std;
 
 enum ShaderFlag
 {
-	MVP  = 0x1,
-	
-	Vertex = 0x10,
-	Color = 0x20,
-	Normal = 0x30,
+	LightDir = 1 << 1,
+	LightColor = 1 << 2,
 };
 
 enum ShaderType
@@ -24,7 +22,9 @@ enum ShaderType
 class Material
 {
 public:
-	Material():mMvpLoc(-1), mShaderProgram(-1)
+	static void InitCache();
+
+	Material():mMvpLoc(-1), mShaderProgram(-1), flag(0)
 	{}
 
 	void initShader(Renderer& context, ShaderType type);
@@ -33,12 +33,17 @@ public:
 	AcUint	mShaderProgram;
 	AcInt	mMvpLoc;
 
+	GLint	mLightColor;
+	GLint	mLightDir;
+
 protected:
 	//Material Params
 	AcColor3	mDiffuse;
 	AcColor3	mSpecular;
 
+	int		flag;
 
-
+	static map<ShaderType, string> Verts;
+	static map<ShaderType, string> Frags;
 };
 

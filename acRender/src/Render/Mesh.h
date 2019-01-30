@@ -17,7 +17,7 @@ public:
 
 	void initDraw(Renderer& context);
 
-	void draw(Renderer& context,const AcMatrix& mat);
+	void draw(Renderer& context,const AcMatrix& mvp,const class Light* l = nullptr);
 
 protected:
 	ShapeType	mShape;
@@ -25,11 +25,16 @@ protected:
 	GLuint		mVao;
 	GLuint		mVbo[2];
 
+	GLuint		mColorBuf;
+	GLuint		mNormBuf;
+
+	GLuint		normSize;
 	GLuint		vertexSize;
 	GLuint		indexSize;
 
 	GLfloat*	normals;
 	GLfloat*	vertices;
+	GLfloat*	colors;
 	GLuint*		indices;
 
 	class Material*	mMaterial;

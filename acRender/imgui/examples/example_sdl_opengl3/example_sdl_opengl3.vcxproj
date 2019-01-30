@@ -103,7 +103,7 @@
     </Link>
     <PostBuildEvent>
       <Command>mkdir $(SolutionDIr)$(Configuration)\res
-xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E</Command>
+xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

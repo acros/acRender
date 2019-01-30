@@ -1,29 +1,23 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Base/AcUtils.h"
+#include "Render/AcLight.h"
 
 const int POSTITION_LOC = 0;
 const int COLOR_LOC = 1;
-
-GLfloat vtx[3 * 7] =
-{
-	0.0f,  0.5f, 0.0f,        // v0
-	1.0f,  0.0f, 0.0f, 1.0f,  // c0
-	-0.5f, -0.5f, 0.0f,       // v1
-	0.0f,  1.0f, 0.0f, 1.0f,  // c1
-	0.5f, -0.5f, 0.0f,        // v2
-	0.0f,  0.0f, 1.0f, 1.0f,  // c2
-};
-GLuint idx[3] = { 0, 1, 2 };
+const int NORMAL_LOC = 2;
 
 Mesh::Mesh() 
 	: vertices(nullptr)
 	, indices(nullptr)
 	, normals(nullptr)
+	, colors(nullptr)
 	, vertexSize(0)
 	, indexSize(0)
 	, mMaterial(nullptr)
 	, mVao(0)
+	, mNormBuf(0)
+	, mColorBuf(0)
 {
 	mVbo[0] = 0;
 	mVbo[1] = 0;
@@ -33,6 +27,8 @@ Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &mVao);
 	glDeleteBuffers(2, mVbo);
+	glDeleteBuffers(1, &mNormBuf);
+	glDeleteBuffers(1, &mColorBuf);
 
 	if (mShape == ST_ColorTriangle)
 	{
@@ -40,11 +36,10 @@ Mesh::~Mesh()
 	}
 	else
 	{
-		if (vertices)
-			free(vertices);
-
-		if (indices)
-			free(indices);
+		SAFE_FREE(vertices);
+		SAFE_FREE(indices);
+		SAFE_FREE(normals);
+		SAFE_FREE(colors);
 	}
 
 	SAFE_DELETE(mMaterial);
@@ -53,11 +48,6 @@ Mesh::~Mesh()
 void Mesh::createTriagle()
 {
 	mShape = ST_ColorTriangle;
-
-	vertices = vtx;
-	indices = idx;
-	indexSize = 3;
-	vertexSize = 7;
 
 	mMaterial = new Material();
 }
@@ -83,6 +73,7 @@ void Mesh::createPlane()
 	indexSize = esGenSquareGrid(edgeTrigleNums, &vertices, &indices);
 	vertexSize = edgeTrigleNums * edgeTrigleNums;
 
+
 	mMaterial = new Material();
 }
 
@@ -91,16 +82,19 @@ void Mesh::createSphere()
 	mShape = ST_Sphere;
 
 	int numSlices = 40;
-	indexSize = esGenSphere(numSlices,1.0f, &vertices, &normals, NULL, &indices);
+	indexSize = esGenSphere(numSlices,1.0f, &vertices, &normals,&colors, NULL, &indices);
 	int numParallels = numSlices / 2;
 	vertexSize = (numParallels + 1) * (numSlices + 1);
+
+	normSize = vertexSize;
 
 	mMaterial = new Material();
 }
 
 void Mesh::initDraw(Renderer& context)
 {
-	mMaterial->initShader(context,"","");
+	ShaderType sType = (mShape == ST_Sphere) ? LightLambert : VertexColor;
+	mMaterial->initShader(context, sType);
 
 	//VBO rely on VAO
 	glGenVertexArrays(1, &mVao);
@@ -112,37 +106,73 @@ void Mesh::initDraw(Renderer& context)
 
 	if (mShape == ST_ColorTriangle)
 	{
-		//Init VBO (Vertex Buffer Object)
-		glEnableVertexAttribArray(0);
-		glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
+		GLfloat vtx[3 * 7] =	{
+			0.0f,  0.5f, 0.0f,        // v0
+			1.0f,  0.0f, 0.0f, 1.0f,  // c0
+			-0.5f, -0.5f, 0.0f,       // v1
+			0.0f,  1.0f, 0.0f, 1.0f,  // c1
+			0.5f, -0.5f, 0.0f,        // v2
+			0.0f,  0.0f, 1.0f, 1.0f,  // c2
+		};
+		GLuint idx[3] = { 0, 1, 2 }; //Must Remain a copy in memory
 
+		vertices = vtx;
+		indices = idx;
+		indexSize = 3;
+		vertexSize = 7;
+
+		//Mix Pos&Color Vertex - One VertexBuff
+		glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
+		
+		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
 		GLint offset = sizeof(GLfloat) * 3;
 		glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (3 + 4), (const void*)offset);
 
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLuint), indices, GL_STATIC_DRAW);
+	}
+	else if (mShape == ST_Sphere)
+	{
+		//A element array with multiple vertex buffers
+		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
+		glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(POSTITION_LOC);
+		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
 
-		glBindVertexArray(0);
+		glGenBuffers(1, &mColorBuf);
+		glBindBuffer(GL_ARRAY_BUFFER, mColorBuf);
+		glBufferData(GL_ARRAY_BUFFER, normSize * 3 * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(COLOR_LOC);
+		glVertexAttribPointer(COLOR_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
+
+		glGenBuffers(1, &mNormBuf);
+		glBindBuffer(GL_ARRAY_BUFFER, mNormBuf);
+		glBufferData(GL_ARRAY_BUFFER, normSize * 3 * sizeof(GLfloat), normals, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(NORMAL_LOC);
+		glVertexAttribPointer(NORMAL_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
 	}
 	else
 	{
 		glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
-void Mesh::draw(Renderer& context,const AcMatrix& mvp)
+
+void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Light* light /*=nullptr*/)
 {
 	glUseProgram(mMaterial->mShaderProgram);
 
+	glBindVertexArray(mVao);
+
 	if (mShape == ST_ColorTriangle)
 	{
-		//Vertex Color
-		glBindVertexArray(mVao);
-		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
 		glEnableVertexAttribArray(POSTITION_LOC);
@@ -155,29 +185,15 @@ void Mesh::draw(Renderer& context,const AcMatrix& mvp)
 		glDisableVertexAttribArray(POSTITION_LOC);
 		glDisableVertexAttribArray(COLOR_LOC);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	else if (mShape == ST_Sphere)
 	{
-		//TODO:
-
-		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
-		glEnableVertexAttribArray(POSTITION_LOC);
-		glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
-
-		glVertexAttrib4f(COLOR_LOC, 0.5f, 0.3f, 0.7f, 1.0f);
-
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 
-		glDisableVertexAttribArray(POSTITION_LOC);
-		glDisableVertexAttribArray(COLOR_LOC);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	else

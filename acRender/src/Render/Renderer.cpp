@@ -1,10 +1,11 @@
 #include "Renderer.h"
 #include "Base/AcUtils.h"
+#include "Material.h"
 
 Renderer::Renderer()
 	: mProgramObject(0)
 {
-
+	Material::InitCache();
 }
 
 Renderer::~Renderer()

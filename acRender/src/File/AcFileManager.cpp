@@ -41,6 +41,9 @@ namespace Acros {
 
 	int FileManager::loadShaderFile(const string& shaderFile,string& content)
 	{
+		if (shaderFile.empty())
+			return -1;
+
 		string prefix = SDL_GetBasePath();
 		string fullName = prefix + ShaderPath + shaderFile;
 		SDL_RWops *file = SDL_RWFromFile(fullName.c_str(), "r");
