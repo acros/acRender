@@ -28,7 +28,7 @@ void AcObject::initDraw(Renderer& context)
 	}
 }
 
-void AcObject::draw(Renderer& context, Camera* cam, Light* l)
+void AcObject::draw(Renderer& context, Camera* cam, Acros::Light* l)
 {
 	if (mMesh != nullptr)
 	{

@@ -32,6 +32,9 @@ void Material::initShader(Renderer& context, ShaderType type)
 
 	if (type == LightLambert)
 	{
+		mLightDir = glGetUniformLocation(mShaderProgram, "u_light_dir");
+		mLightColor = glGetUniformLocation(mShaderProgram, "u_lightColor");
+
 		flag = LightDir  | LightColor;
 	}
 }

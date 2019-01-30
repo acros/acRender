@@ -84,8 +84,8 @@ int esGenSphere(int numSlices, float radius, GLfloat **vertices, GLfloat **norma
 		 {
 			 //RGB
 			 (*colors)[vertex + 0] = 0.5f;
-			 (*colors)[vertex + 1] = 0.0f;
-			 (*colors)[vertex + 2] = 0.0f;
+			 (*colors)[vertex + 1] = 0.5f;
+			 (*colors)[vertex + 2] = 0.5f;
 		 }
 
          if ( texCoords )

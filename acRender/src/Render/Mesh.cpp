@@ -1,7 +1,6 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Base/AcUtils.h"
-#include "Render/AcLight.h"
 
 const int POSTITION_LOC = 0;
 const int COLOR_LOC = 1;
@@ -165,7 +164,7 @@ void Mesh::initDraw(Renderer& context)
 }
 
 
-void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Light* light /*=nullptr*/)
+void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* light /*=nullptr*/)
 {
 	glUseProgram(mMaterial->mShaderProgram);
 
@@ -192,6 +191,13 @@ void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Light* light /*=nu
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+		if (light != nullptr)
+		{
+			const AcVector& lDir = light->getDir();
+			glUniform4fv(mMaterial->mLightDir,1,glm::value_ptr(lDir));
+			const AcColor3& lColor = light->getColor();
+			glUniform4fv(mMaterial->mLightColor, 1, glm::value_ptr(lColor));
+		}
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -212,6 +218,11 @@ void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Light* light /*=nu
 			assert(false);
 
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+		if (light != nullptr)
+		{
+			const AcVector& lDir = light->getDir();
+			glUniformMatrix4fv(mMaterial->mLightDir, 1, GL_FALSE, glm::value_ptr(lDir));
+		}
 
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 

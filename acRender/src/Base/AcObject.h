@@ -3,6 +3,11 @@
 #include "Render/Renderer.h"
 #include "Base/AcUtils.h"
 
+namespace Acros
+{
+	class Light;
+}
+
 //The basic object
 class AcObject {
 public:
@@ -21,7 +26,7 @@ public:
 	virtual void update(float delta)	{}
 	
 	void initDraw(Renderer& context);
-	virtual void draw(Renderer& context, class Camera* cam,class Light* l = nullptr);
+	virtual void draw(Renderer& context, class Camera* cam,class Acros::Light* l = nullptr);
 
 	const class Mesh* getMesh()const { return mMesh; }
 

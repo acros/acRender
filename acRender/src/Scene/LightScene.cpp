@@ -66,7 +66,7 @@ void LightScene::render()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	mCube->draw(mRendererRef, mCam);
+	mCube->draw(mRendererRef, mCam,&mDirLight);
 	mGround->draw(mRendererRef, mCam);
 }
 
@@ -88,6 +88,9 @@ void LightScene::renderImgui()
 	ImGui::SliderFloat("Z", &LDIR.z, -1, 1);
  	mDirLight.setDir(LDIR);
 
+	static float color[3]{1,1,1};
+	ImGui::ColorEdit3("Light Color", color);
+	mDirLight.setColor(AcColor3(color[0],color[1],color[2]));
 // 	AcQuat quat = glm::angleAxis(glm::radians(angle), rot);
 }
 #endif

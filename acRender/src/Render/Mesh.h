@@ -1,8 +1,9 @@
 #pragma once
 
-//#include "AcObject.h"
 #include "Renderer.h"
 #include "Math/AcMath.h"
+#include "Render/AcLight.h"
+
 
 class Mesh
 {
@@ -17,7 +18,7 @@ public:
 
 	void initDraw(Renderer& context);
 
-	void draw(Renderer& context,const AcMatrix& mvp,const class Light* l = nullptr);
+	void draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* l = nullptr);
 
 protected:
 	ShapeType	mShape;
