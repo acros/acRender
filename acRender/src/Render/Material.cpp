@@ -17,6 +17,9 @@ void Material::InitCache()
 
 	Verts.insert(make_pair(LightLambert, "lambert_mvp.vert"));
 	Frags.insert(make_pair(LightLambert, "lambert_mvp.frag"));
+
+	Verts.insert(make_pair(LightBlinnPhong, "blinn_phong_mvp.vert"));
+	Frags.insert(make_pair(LightBlinnPhong, "blinn_phong_mvp.frag"));
 }
 
 void Material::initShader(Renderer& context, ShaderType type)
@@ -28,13 +31,32 @@ void Material::initShader(Renderer& context, ShaderType type)
 	FileManager::loadShaderFile(Frags[type], fragStr);
 	mShaderProgram = context.loadShaderProgram(vertStr, fragStr);
 
+
+	switch (type)
+	{
+	case VertexColor:
+		break;
+	case LightLambert:
+		flag = LightDir | LightColor;
+		break;
+	case LightBlinnPhong:
+		flag = LightDir | LightColor | EyePos | Specular;
+		break;
+	default:
+		break;
+	}
+
 	mMvpLoc = glGetUniformLocation(mShaderProgram, "u_mvpMatrix");
 
-	if (type == LightLambert)
-	{
+	if (flag | LightDir)
 		mLightDir = glGetUniformLocation(mShaderProgram, "u_light_dir");
+
+	if (flag | LightColor)
 		mLightColor = glGetUniformLocation(mShaderProgram, "u_lightColor");
 
-		flag = LightDir  | LightColor;
-	}
+	if(flag | EyePos)
+		mEyePos = glGetUniformLocation(mShaderProgram, "u_eye_pos");
+
+	if (flag | Specular)
+		mSpecularParam = glGetUniformLocation(mShaderProgram, "u_specular");
 }

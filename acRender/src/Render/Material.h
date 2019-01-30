@@ -10,12 +10,16 @@ enum ShaderFlag
 {
 	LightDir = 1 << 1,
 	LightColor = 1 << 2,
+
+	EyePos =  1 << 3,
+	Specular = 1<<4,
 };
 
 enum ShaderType
 {
 	VertexColor = 0,
-	LightLambert = 1
+	LightLambert = 1,
+	LightBlinnPhong = 2
 };
 
 
@@ -24,7 +28,12 @@ class Material
 public:
 	static void InitCache();
 
-	Material():mMvpLoc(-1), mShaderProgram(-1), flag(0)
+	Material()
+		: mMvpLoc(-1)
+		, mShaderProgram(-1)
+		, flag(0)
+		, mEyePos(0)
+		, mSpecularParam(0)
 	{}
 
 	void initShader(Renderer& context, ShaderType type);
@@ -36,10 +45,13 @@ public:
 	GLint	mLightColor;
 	GLint	mLightDir;
 
+	GLint	mEyePos;
+	GLint	mSpecularParam;
 protected:
 	//Material Params
 	AcColor3	mDiffuse;
 	AcColor3	mSpecular;
+
 
 	int		flag;
 
