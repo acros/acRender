@@ -16,15 +16,15 @@ public:
 
 	virtual void enter()override;
 
+
 	virtual void update(float delta)override;
 
+	virtual void initRender(Renderer& r)override;
 	virtual void render(Renderer& r)override;
 
 	virtual void exit()override;
 
 protected:
-
-	GLuint createSimpleTexture2D();
 
 	float	mTexUpdateDuration;
 	float	mTimeAcculation;

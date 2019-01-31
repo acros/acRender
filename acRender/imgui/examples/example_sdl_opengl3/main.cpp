@@ -158,10 +158,8 @@ int main(int, char**)
 
     Uint32 NOW = SDL_GetTicks();
     Uint32 LAST = 0;
-    double deltaTime = 0;
+    float deltaTime = 0;
 
-//     Renderer	mRenderer;
-//     mRenderer.checkRendererVersion();
     Acros::World world;
 
     // Main loop
@@ -170,7 +168,7 @@ int main(int, char**)
     {
         LAST = NOW;
         NOW = SDL_GetTicks();
-        deltaTime = (double)(NOW - LAST) / 1000;
+        deltaTime = (float)((double)(NOW - LAST) / 1000);
 
 #if _DEBUG
         while(deltaTime > 1)

@@ -88,12 +88,6 @@
     <ClCompile Include="..\..\..\src\Scene\TextureScene.cpp">
       <Filter>acRender\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Scene\TriangleScene.cpp">
-      <Filter>acRender\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Scene\SimpleTriangle.cpp">
-      <Filter>acRender\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Scene\VertexScene.cpp">
       <Filter>acRender\Scene</Filter>
     </ClCompile>
@@ -166,12 +160,6 @@
       <Filter>acRender\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\TextureScene.h">
-      <Filter>acRender\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Scene\TriangleScene.h">
-      <Filter>acRender\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Scene\SimpleTriangle.h">
       <Filter>acRender\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\VertexScene.h">

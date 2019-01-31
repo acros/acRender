@@ -21,7 +21,7 @@ namespace Acros {
 		if (file != nullptr)
 		{
 			char buf[1024];
-			int sz = file->size(file);
+			Sint64 sz = file->size(file);
 			assert(1024 > sz);
 			int blocks = SDL_RWread(file, buf, 16, 1024 / 16);
 			SDL_RWclose(file);
@@ -50,7 +50,7 @@ namespace Acros {
 		if (file != nullptr)
 		{
 			char buf[1024];
-			int sz = file->size(file);
+			Sint64 sz = file->size(file);
 			assert(1024 > sz);
 			int blocks = SDL_RWread(file, buf, 16, 1024 / 16);
 			SDL_RWclose(file);

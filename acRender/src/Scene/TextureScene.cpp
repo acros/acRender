@@ -21,7 +21,6 @@ TextureScene::TextureScene()
 
 TextureScene::~TextureScene()
 {
-	// Delete texture object
 	glDeleteTextures(1, &mTexId);
 }
 
@@ -30,8 +29,6 @@ void TextureScene::enter()
 	Scene::enter();
 
 	glUseProgram(mShaderProgram);
-
-	mTexId = createSimpleTexture2D();
 
 	//VBO rely on VAO
 	glGenVertexArrays(1, &mBaseVAO);
@@ -85,6 +82,13 @@ void TextureScene::update(float delta)
 	}
 }
 
+void TextureScene::initRender(Renderer & r)
+{
+	mTexId = r.createSimpleTexture2D(width, height, pixels);
+	mTimeAcculation = 0;
+	mSubmitTex = false;
+}
+
 void TextureScene::render(Renderer& r)
 {
 	r.beginDraw();
@@ -123,36 +127,4 @@ void TextureScene::exit()
 {
 	Scene::exit();
 
-}
-
-GLuint TextureScene::createSimpleTexture2D()
-{
-	// Texture object handle
-	GLuint textureId;
-
-	// 2x2 Image, 3 bytes per pixel (R, G, B)
-
-	for (int i=0; i < width * height *3 ; ++i)
-	{
-		pixels[i] = rand() % 256;
-	}
-
-	// Use tightly packed data
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	// Generate a texture object
-	glGenTextures(1, &textureId);
-
-	// Bind the texture object
-	glBindTexture(GL_TEXTURE_2D, textureId);
-
-	// Load the texture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-
-	// Set the filtering mode
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	return textureId;
 }

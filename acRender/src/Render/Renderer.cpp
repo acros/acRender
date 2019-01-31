@@ -150,4 +150,35 @@ namespace Acros
 
 		return shader;
 	}
+
+
+	GLuint Renderer::createSimpleTexture2D(int w,int h,GLubyte* pixels)
+	{
+		GLuint textureId;
+
+		for (int i = 0; i < w * h * 3; ++i)
+		{
+			pixels[i] = rand() % 256;
+		}
+
+		// Use tightly packed data
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Generate a texture object
+		glGenTextures(1, &textureId);
+
+		// Bind the texture object
+		glBindTexture(GL_TEXTURE_2D, textureId);
+
+		// Load the texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+
+		// Set the filtering mode
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		return textureId;
+	}
+
 }

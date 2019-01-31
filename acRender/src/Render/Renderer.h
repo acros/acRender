@@ -32,6 +32,8 @@ namespace Acros
 
 		void	endDraw();
 
+		GLuint createSimpleTexture2D(int w, int h, GLubyte* pixels);
+
 	protected:
 
 		AcUint loadShader(AcEnum type, const char *shaderSrc);

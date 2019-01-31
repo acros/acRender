@@ -9,28 +9,23 @@
 #include "Scene.hpp"
 #include "Base/AcObject.h"
 
-#include "SimpleTriangle.h"
 #include "FboScene.h"
 #include "LightScene.h"
 #include "ParticleScene.h"
 #include "TextureScene.h"
-#include "TriangleScene.h"
 #include "VertexScene.h"
 
 namespace Acros {
 
 
-	const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
+	const string Scene::SceneList[] = { "FBO","Light","Particle","Texture","Vertex Obj" };
 	const int Scene::SceneListLen = sizeof(Scene::SceneList) / sizeof(Scene::SceneList[0]);
 
 	Scene* Scene::CreateScene(int index)
 	{
 		Scene* newScene = nullptr;
-		switch (index)
+		switch (index + 1)
 		{
-		case 0:
-			newScene = new SimpleTriangle();
-			break;
 		case 1:
 			newScene = new FboScene();
 			break;
@@ -44,9 +39,6 @@ namespace Acros {
 			newScene = new TextureScene();
 			break;
 		case 5:
-			newScene = new TriangleScene();
-			break;
-		case 6:
 			newScene = new VertexScene();
 			break;
 		default:
@@ -82,7 +74,7 @@ namespace Acros {
 
 	void Scene::update(float delta)
 	{
-		for (int i=0; i < mObjects.size(); ++i)
+		for (size_t i=0; i < mObjects.size(); ++i)
 		{
 			mObjects[i]->update(delta);
 		}
@@ -104,7 +96,7 @@ namespace Acros {
 
 	void Scene::exit()
 	{
-		for (int i=0; i < mObjects.size(); ++i)
+		for (size_t i=0; i < mObjects.size(); ++i)
 		{
 			SAFE_DELETE(mObjects[i]);
 		}

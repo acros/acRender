@@ -87,7 +87,7 @@ namespace Acros
 			ImGui::EndMenuBar();
 		}
 
-		for (size_t i = 0; i < Scene::SceneListLen; ++i)
+		for (int i = 0; i < Scene::SceneListLen; ++i)
 		{
 			ImGui::RadioButton(Scene::SceneList[i].c_str(), &mSceneSelection, i); 
 		}
