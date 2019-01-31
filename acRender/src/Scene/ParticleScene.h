@@ -6,10 +6,13 @@
 	Vertex Draw
 	Example for VAO VBO
 */
+using Acros::Scene;
+using Acros::Renderer;
+
 class ParticleScene : public Scene
 {
 public:
-	ParticleScene(Renderer& renderer);
+	ParticleScene();
 	~ParticleScene();
 
 	GLuint loadTexture(void * ioContext, char * fileName);
@@ -18,7 +21,7 @@ public:
 
 	virtual void update(float delta)override;
 
-	virtual void render()override;
+	virtual void render(Renderer& r)override;
 
 	virtual void exit()override;
 

@@ -1,16 +1,18 @@
 #pragma once
 
 #include "Scene.hpp"
+using Acros::Scene;
+using Acros::Renderer;
 
 class SimpleTriangle : public Scene
 {
 public:
-	SimpleTriangle(Renderer& renderer);
+	SimpleTriangle();
 	~SimpleTriangle();
 
 	virtual void enter()override;
 
-	virtual void render()override;
+	virtual void render(Renderer& r)override;
 
 	virtual void exit()override;
 

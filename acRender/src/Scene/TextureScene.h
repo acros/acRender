@@ -5,17 +5,20 @@
 /*
 	Example For GL Texture use
 */
+using Acros::Scene;
+using Acros::Renderer;
+
 class TextureScene : public Scene
 {
 public:
-	TextureScene(Renderer& renderer);
+	TextureScene();
 	~TextureScene();
 
 	virtual void enter()override;
 
 	virtual void update(float delta)override;
 
-	virtual void render()override;
+	virtual void render(Renderer& r)override;
 
 	virtual void exit()override;
 

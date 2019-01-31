@@ -5,41 +5,40 @@
 
 namespace Acros
 {
-	class Light;
-}
+	//The basic object
+	class AcObject {
+	public:
+		AcObject();
+		virtual ~AcObject();
 
-//The basic object
-class AcObject {
-public:
-	AcObject();
-	virtual ~AcObject();
+		void setPosition(const AcVector& pos) { mTransform.setTranslation(pos); }
+		void setScale(const AcVector& scale) { mTransform.setScale(scale); }
+		void setRotation(const AcVector& rot) { mTransform.setRotation(rot); }
 
-	void setPosition(const AcVector& pos) { mTransform.setTranslation(pos); }
-	void setScale(const AcVector& scale) { mTransform.setScale(scale); }
-	void setRotation(const AcVector& rot) { mTransform.setRotation(rot); }
+		AcTransform& GetTransform() { return mTransform; }
+		const AcTransform& GetTransform()const { return mTransform; }
 
-	AcTransform& GetTransform() { return mTransform; }
-	const AcTransform& GetTransform()const { return mTransform; }
+		void rotate(const AcVector& rotAxis, float angle);
 
-	void rotate(const AcVector& rotAxis, float angle);
-
-	virtual void update(float delta)	{}
+		virtual void update(float delta)	{}
 	
-	void initDraw(Renderer& context);
-	virtual void draw(Renderer& context, class Camera* cam,class Acros::Light* l = nullptr);
+		void initDraw(Renderer& context);
+		virtual void draw(Renderer& context, class Camera* cam,class Light* l = nullptr);
 
-	const class Mesh* getMesh()const { return mMesh; }
+		const class Mesh* getMesh()const { return mMesh; }
 
-	//Debug use
-	void createShape(ShapeType	shape);
+		//Debug use
+		void createShape(ShapeType	shape);
 
-#if ACROS_USE_IMGUI
-	virtual void drawImgui();
-#endif
+	#if ACROS_USE_IMGUI
+		virtual void drawImgui();
+	#endif
 
-protected:
+	protected:
 
-	AcTransform mTransform;
+		AcTransform mTransform;
 
-	class Mesh* mMesh;
-};
+		class Mesh* mMesh;
+	};
+
+}

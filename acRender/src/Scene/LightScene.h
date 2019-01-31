@@ -6,28 +6,32 @@
 /*
 	The Light scene
 */
-class LightScene : public Scene
+namespace Acros
 {
-public:
-	LightScene(Renderer& renderer);
-	~LightScene();
+	class LightScene : public Scene
+	{
+	public:
+		LightScene();
+		~LightScene();
 
-	virtual void enter()override;
+		virtual void enter()override;
 
-	virtual void update(float delta);
+		virtual void update(float delta);
 
-	virtual void render()override;
+		virtual void initRender(Renderer& r)override;
+		virtual void render(Renderer& r)override;
 
-	virtual void exit()override;
+		virtual void exit()override;
 
 #if ACROS_USE_IMGUI
-	virtual void renderImgui();
+		virtual void renderImgui();
 #endif 
 
 
-protected:
+	protected:
 
-	float		mCameraMoveTime;
+		float		mCameraMoveTime;
 
-	Camera*		mCam;
-};
+		Camera*		mCam;
+	};
+}

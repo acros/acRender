@@ -6,37 +6,35 @@
 
 using namespace std;
 
-
-enum ShapeType
+namespace Acros
 {
-	ST_Cube,
-	ST_Plane,
-	ST_ColorTriangle,
-	ST_Sphere
-};
+	enum ShapeType
+	{
+		ST_Cube,
+		ST_Plane,
+		ST_ColorTriangle,
+		ST_Sphere
+	};
 
-class Renderer {
-public:
-	Renderer();
-	~Renderer();
+	class Renderer {
+	public:
+		Renderer();
+		~Renderer();
 
-	void checkRendererVersion()const;
+		void checkRendererVersion()const;
 
-	void	setViewport(int width,int height);
-	AcUint	loadShaderProgram(const string& vertStr,const string& fragStr);
+		void	setViewport(int width, int height);
+		AcUint	loadShaderProgram(const string& vertStr, const string& fragStr);
 
-	void	beginDraw();
+		void	beginDraw();
 
-	void	draw();
+		void	draw();
 
-	void	endDraw();
+		void	endDraw();
 
-protected:
+	protected:
 
-	AcUint loadShader(AcEnum type, const char *shaderSrc);
+		AcUint loadShader(AcEnum type, const char *shaderSrc);
 
-protected:
-
-	AcUint mProgramObject;
-
-};
+	};
+}

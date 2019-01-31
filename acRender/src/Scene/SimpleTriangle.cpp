@@ -24,8 +24,8 @@ GLfloat vertices[3 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE)] =
 
 GLushort indices[3] = { 0, 1, 2 };
 
-SimpleTriangle::SimpleTriangle(Renderer& renderer)
-	: Scene(renderer)
+SimpleTriangle::SimpleTriangle()
+	: Scene()
 #if !USE_OGL_3_LATEST
 	, mVaoId(0)
 #endif
@@ -67,13 +67,13 @@ void SimpleTriangle::enter()
 	glBindVertexArray(0);
 }
 
-void SimpleTriangle::render()
+void SimpleTriangle::render(Renderer& r)
 {
-	mRendererRef.beginDraw();
+	r.beginDraw();
 
 	drawWithVBO();
 
-	mRendererRef.endDraw();
+	r.endDraw();
 }
 
 

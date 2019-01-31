@@ -12,8 +12,8 @@ float sParticleData[NUM_PARTICLES * PARTICLE_SIZE];
 #define ATTRIBUTE_ENDPOSITION_LOCATION    2
 
 
-ParticleScene::ParticleScene(Renderer& renderer)
-	: Scene(renderer)
+ParticleScene::ParticleScene()
+	: Scene()
 	, textureId(-1)
 {
 	mVertStr =
@@ -132,8 +132,6 @@ void ParticleScene::enter()
 	time = 1.0f;
 
 	textureId = loadTexture(nullptr, "C:\\codingEnv\\GL_GraphicLab\\x64\\Debug\\smoke.tga");
-
-	assert(textureId >= 0);
 }
 
 void ParticleScene::update(float delta)
@@ -170,9 +168,10 @@ void ParticleScene::update(float delta)
 	glUniform1f(timeLoc, time);
 }
 
-void ParticleScene::render()
+
+void ParticleScene::render(Renderer& r)
 {
-	mRendererRef.beginDraw();
+	r.beginDraw();
 
 	glUseProgram(mShaderProgram);
 
@@ -198,7 +197,7 @@ void ParticleScene::render()
 
 	glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
 
-	mRendererRef.endDraw();
+	r.endDraw();
 }
 
 

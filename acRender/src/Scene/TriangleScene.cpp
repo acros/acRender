@@ -6,8 +6,8 @@ const GLushort TriangleScene::vertex_indices[] = {
 	0, 1, 2,
 };
 
-TriangleScene::TriangleScene(Renderer& renderer)
-	: Scene(renderer)
+TriangleScene::TriangleScene()
+	: Scene()
 	, mUseElementDraw(false)
 {
 	Acros::FileManager::loadShaderFile("simple_color_2d.vert", mVertStr);
@@ -45,8 +45,6 @@ void TriangleScene::enter()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
 
-//	glVertexAttrib4f(1, 0.5f, 0.3f, 0.7f, 1.0f);
-
 	glEnableVertexAttribArray(1);//For Color
 	glGenBuffers(1, &mColorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mColorBuffer);
@@ -63,9 +61,9 @@ void TriangleScene::enter()
 #endif
 }
 
-void TriangleScene::render()
+void TriangleScene::render(Renderer & r)
 {
-	mRendererRef.beginDraw();
+	r.beginDraw();
 
 	// Use the program object
 	glUseProgram(mShaderProgram);
@@ -83,14 +81,12 @@ void TriangleScene::render()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
-	mRendererRef.endDraw();
+	r.endDraw();
 }
 
 void TriangleScene::exit()
 {
 	Scene::exit();
 
-// 	glDeleteVertexArrays(1, &mVAO);
-// 	glDeleteBuffers(1, &mPosBuffer);
 	glDeleteBuffers(1, &mColorBuffer);
 }

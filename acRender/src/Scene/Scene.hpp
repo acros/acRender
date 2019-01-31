@@ -18,54 +18,58 @@
 
 using namespace std;
 
-class Scene{
-public:
-	Scene(Renderer&	render);
-	virtual ~Scene();
+namespace Acros
+{
+	class AcObject;
 
-	const string& getVertexStr()const { return mVertStr; }
-	const string& getFragmentStr()const { return mFragStr; }
+	class Scene {
+		friend class World;
 
-    virtual void enter();
-    
-    virtual void update(float delta);
-    
-    virtual void render();
-    
-    virtual void exit();
+	public:
+		Scene();
+		virtual ~Scene();
+
+		const string& getVertexStr()const { return mVertStr; }
+		const string& getFragmentStr()const { return mFragStr; }
+
+		virtual void enter();
+
+		virtual void update(float delta);
+
+		virtual void initRender(Renderer& r) {}
+
+		virtual void preRender(Renderer& r);
+		virtual void render(Renderer& r);
+		virtual void postRender(Renderer& r) {}
+
+		virtual void quitRender(Renderer& r) {}
+
+		virtual void exit();
 
 #if ACROS_USE_IMGUI
-	virtual void renderImgui() {}
-	static void	DrawImGui();
+		virtual void renderImgui() {}
 #endif 
 
-	static void UpdateScene(Renderer& r);
-	static void ClearScene();
+	protected:
+		static Scene* CreateScene(int index);
 
-	static Scene*	GetScene() { return sShowingScene; }
+		//TODO: Refactor  -[Material Params]
+		string	mVertStr;
+		string	mFragStr;
+		GLuint	mShaderProgram;
+		GLuint mBaseVAO;
+		GLuint mBaseVtxBuffer;
+		GLuint mBaseVboIndicesBuffer;
 
-protected:
-    
-	//TODO: Refactor  -[Material Params]
-	string	mVertStr;
-	string	mFragStr;
-	GLuint	mShaderProgram;
-	GLuint mBaseVAO;
-	GLuint mBaseVtxBuffer;
-	GLuint mBaseVboIndicesBuffer;
+		vector<AcObject*>	mObjects;
 
-	Renderer&	mRendererRef;
+		Acros::Light mDirLight;
 
-	vector<class AcObject*>	mObjects;
+	private:
+		const static string SceneList[];
+	};
 
-	Acros::Light mDirLight;
-
-private:
-	static class Scene*	sShowingScene;
-	static int sSceneSelection;
-	static int sCurrenSceneIdx;
-	const static string SceneList[];
-};
+}
 
 
 #endif /* Scene_hpp */

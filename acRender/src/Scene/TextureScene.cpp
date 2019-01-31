@@ -6,8 +6,8 @@ const GLsizei width = 3;
 const GLsizei height = 3;
 GLubyte pixels[width * height * 3];
 
-TextureScene::TextureScene(Renderer& renderer)
-	: Scene(renderer)
+TextureScene::TextureScene()
+	: Scene()
 	, mSampleLocation(0)
 	, mTexId(0)
 	, mTexUpdateDuration(3)
@@ -85,9 +85,9 @@ void TextureScene::update(float delta)
 	}
 }
 
-void TextureScene::render()
+void TextureScene::render(Renderer& r)
 {
-	mRendererRef.beginDraw();
+	r.beginDraw();
 
 	// Bind the texture
 	glActiveTexture(GL_TEXTURE0);
@@ -116,7 +116,7 @@ void TextureScene::render()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	mRendererRef.endDraw();
+	r.endDraw();
 }
 
 void TextureScene::exit()

@@ -4,39 +4,43 @@
 #include "Math/AcMath.h"
 #include "Render/AcLight.h"
 
-
-class Mesh
+namespace Acros
 {
-public:
-	Mesh();
-	~Mesh();
 
-	void createTriagle();
-	void createCube();
-	void createPlane();
-	void createSphere();
+	class Mesh
+	{
+	public:
+		Mesh();
+		~Mesh();
 
-	void initDraw(Renderer& context);
+		void createTriagle();
+		void createCube();
+		void createPlane();
+		void createSphere();
 
-	void draw(AcTransform& selfTransform,Renderer& context, class Camera* cam, const Acros::Light* l = nullptr);
+		void initDraw(Renderer& context);
 
-protected:
-	ShapeType	mShape;
+		void draw(AcTransform& selfTransform, Renderer& context, class Camera* cam, const Light* l = nullptr);
 
-	GLuint		mVao;
-	GLuint		mVbo[2];
+	protected:
+		ShapeType	mShape;
 
-	GLuint		mColorBuf;
-	GLuint		mNormBuf;
+		GLuint		mVao;
+		GLuint		mVbo[2];
 
-	GLuint		normSize;
-	GLuint		vertexSize;
-	GLuint		indexSize;
+		GLuint		mColorBuf;
+		GLuint		mNormBuf;
 
-	GLfloat*	normals;
-	GLfloat*	vertices;
-	GLfloat*	colors;
-	GLuint*		indices;
+		GLuint		normSize;
+		GLuint		vertexSize;
+		GLuint		indexSize;
 
-	class Material*	mMaterial;
-};
+		GLfloat*	normals;
+		GLfloat*	vertices;
+		GLfloat*	colors;
+		GLuint*		indices;
+
+		class Material*	mMaterial;
+	};
+
+}

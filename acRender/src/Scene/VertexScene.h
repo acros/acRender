@@ -5,27 +5,30 @@
 /*
 	Vertex VBO Draw
 */
-class VertexScene : public Scene
+namespace Acros
 {
-public:
-	VertexScene(Renderer& renderer);
-	~VertexScene();
+	class VertexScene : public Scene
+	{
+	public:
+		VertexScene();
+		~VertexScene();
 
-	virtual void enter()override;
+		virtual void enter()override;
 
-	virtual void render()override;
+		virtual void initRender(Renderer& r)override;
+		virtual void render(Renderer& r)override;
 
-	virtual void exit()override;
+		virtual void exit()override;
 
-	virtual void update(float delta)override;
+		virtual void update(float delta)override;
 
 #if ACROS_USE_IMGUI
-	virtual void renderImgui() override;
+		virtual void renderImgui() override;
 #endif
 
-protected:
+	protected:
 
-	class AcObject*	mObj;
-	class Camera*	mCam;
-
-};
+		class AcObject*	mObj;
+		class Camera*	mCam;
+	};
+}

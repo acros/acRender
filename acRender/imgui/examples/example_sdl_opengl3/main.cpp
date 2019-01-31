@@ -12,14 +12,8 @@
 #include <string>
 #include "../include/utils.h"
 
-#include "Render/Renderer.h"
+#include "AcWorld.h"
 #include "Scene/Scene.hpp"
-#include "Scene/SimpleTriangle.h"
-#include "Scene/FboScene.h"
-#include "Scene/LightScene.h"
-#include "Scene/ParticleScene.h"
-#include "Scene/TextureScene.h"
-#include "Scene/TriangleScene.h"
 
 
 /*
@@ -166,9 +160,10 @@ int main(int, char**)
     Uint32 LAST = 0;
     double deltaTime = 0;
 
-    Renderer	mRenderer;
+//     Renderer	mRenderer;
+//     mRenderer.checkRendererVersion();
+    Acros::World world;
 
-    mRenderer.checkRendererVersion();
     // Main loop
     bool done = false;
     while (!done)
@@ -209,7 +204,7 @@ int main(int, char**)
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
-        Scene::DrawImGui();
+        world.drawImGui();
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         /*
@@ -253,17 +248,18 @@ int main(int, char**)
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        mRenderer.setViewport((int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        Scene::UpdateScene(mRenderer);
-        Scene::GetScene()->update(deltaTime);
-        Scene::GetScene()->render();
+        world.setViewSize((int)io.DisplaySize.x, (int)io.DisplaySize.y);
+
+        world.update(deltaTime);
+
+        world.render();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         SDL_GL_SwapWindow(window);
     }
 
-    Scene::ClearScene();
+    world.quit();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

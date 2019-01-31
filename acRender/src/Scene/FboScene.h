@@ -7,36 +7,39 @@
 	The 3D scene
 
 */
-class FboScene : public Scene
+namespace Acros
 {
-public:
-	FboScene(Renderer& renderer);
-	~FboScene();
+	class FboScene : public Scene
+	{
+	public:
+		FboScene();
+		~FboScene();
 
-	virtual void enter()override;
+		virtual void enter()override;
 
-	virtual void update(float delta);
+		virtual void update(float delta);
 
-	virtual void render()override;
+		virtual void initRender(Renderer& r)override;
 
-	virtual void exit()override;
+		virtual void render(Renderer& r)override;
 
-protected:
+		virtual void exit()override;
 
-	void innerDrawTriangle();
+	protected:
 
-	void testMiniDraw();
+		void innerDrawTriangle();
 
-protected:
-	bool		mRenderToTexture;
-	GLuint		mFbo;
-	GLuint		mTexId[2];
+	protected:
+		bool		mRenderToTexture;
+		GLuint		mFbo;
+		GLuint		mTexId[2];
 
-	float		mCameraMoveTime;
+		float		mCameraMoveTime;
 
-	Camera*		mCam;
+		Camera*		mCam;
 
-	AcObject*	mCube;
-	AcObject*	mGround;
+		AcObject*	mCube;
+		AcObject*	mGround;
 
-};
+	};
+}

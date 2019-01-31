@@ -17,161 +17,105 @@
 #include "TriangleScene.h"
 #include "VertexScene.h"
 
-const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
-Scene*	Scene::sShowingScene = NULL;
-int	Scene::sSceneSelection = 1;
-int Scene::sCurrenSceneIdx = -1;
+namespace Acros {
 
-#if ACROS_USE_IMGUI
-void Scene::DrawImGui()
-{
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+	const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
 
-	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(550, 280), ImGuiCond_FirstUseEver);
 
-	if (!ImGui::Begin("Option", NULL, window_flags))
+	Scene* Scene::CreateScene(int index)
 	{
-		// Early out if the window is collapsed, as an optimization.
-		ImGui::End();
-		return;
-	}
-
-//	ImGui::Text("Current scene: %s","***");
-	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);           // Use fixed width for labels (by passing a negative value), the rest goes to widgets. We choose a width proportional to our font size.
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("Menu"))
+		Scene* newScene = nullptr;
+		switch (index)
 		{
-			ImGui::EndMenu();
+		case 0:
+			newScene = new SimpleTriangle();
+			break;
+		case 1:
+			newScene = new FboScene();
+			break;
+		case 2:
+			newScene = new LightScene();
+			break;
+		case 3:
+			newScene = new ParticleScene();
+			break;
+		case 4:
+			newScene = new TextureScene();
+			break;
+		case 5:
+			newScene = new TriangleScene();
+			break;
+		case 6:
+			newScene = new VertexScene();
+			break;
+		default:
+			assert(false);
+			break;
 		}
 
-		ImGui::EndMenuBar();
+		return newScene;
 	}
 
-	ImGui::RadioButton(SceneList[0].c_str(), &sSceneSelection, 0); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[1].c_str(), &sSceneSelection, 1); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[2].c_str(), &sSceneSelection, 2); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[3].c_str(), &sSceneSelection, 3);
-	ImGui::RadioButton(SceneList[4].c_str(), &sSceneSelection, 4); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[5].c_str(), &sSceneSelection, 5); ImGui::SameLine();
-	ImGui::RadioButton(SceneList[6].c_str(), &sSceneSelection, 6); //ImGui::SameLine();
-
-	if (sShowingScene != nullptr)
+	Scene::Scene()
+		: mShaderProgram(0)
+		, mBaseVAO(0)
+		, mBaseVtxBuffer(0)
+		, mBaseVboIndicesBuffer(0)
+		, mDirLight(Acros::Directional, AcVector(1, -1, 1), AcColor3(0.5f, 0.5f, 0.5f))
 	{
-		sShowingScene->renderImgui();
+
 	}
 
-	ImGui::End();
-}
-#endif
-
-void Scene::UpdateScene(Renderer& render)
-{
-	if (sSceneSelection == sCurrenSceneIdx)
-		return;
-
-	ClearScene();
-
-	sCurrenSceneIdx = sSceneSelection;
-	switch (sSceneSelection)
+	Scene::~Scene()
 	{
-	case 0:
-		sShowingScene = new SimpleTriangle(render);
-		break;
-	case 1:
-		sShowingScene = new FboScene(render);
-		break;
-	case 2:
-		sShowingScene = new LightScene(render);
-		break;
-	case 3:
-		sShowingScene = new ParticleScene(render);
-		break;
-	case 4:
-		sShowingScene = new TextureScene(render);
-		break;
-	case 5:
-		sShowingScene = new TriangleScene(render);
-		break;
-	case 6:
-		sShowingScene = new VertexScene(render);
-		break;
-	default:
-		assert(false);
-		break;
+		if (mShaderProgram != 0)
+		{
+			glDeleteProgram(mShaderProgram);
+		}
 	}
+
+	void Scene::enter()
+	{
 	
-	if (sShowingScene != nullptr)
-		sShowingScene->enter();
-}
-
-void Scene::ClearScene()
-{
-	if (sShowingScene != nullptr)
-	{
-		sCurrenSceneIdx = -1;
-		sShowingScene->exit();
-		delete sShowingScene;
-		sShowingScene = nullptr;
-	}
-}
-
-Scene::Scene(Renderer& render)
-	: mRendererRef(render)
-	, mShaderProgram(0)
-	, mBaseVAO(0)
-	, mBaseVtxBuffer(0)
-	, mBaseVboIndicesBuffer(0)
-	, mDirLight(Acros::Directional, AcVector(1, -1, 1), AcColor3(0.5f, 0.5f, 0.5f))
-{
-
-}
-
-Scene::~Scene()
-{
-	if (mShaderProgram != 0)
-	{
-		glDeleteProgram(mShaderProgram);
-	}
-}
-
-void Scene::enter()
-{
-	if(!getVertexStr().empty() && !getFragmentStr().empty())
-		mShaderProgram = mRendererRef.loadShaderProgram(getVertexStr().c_str(), getFragmentStr().c_str());
-}
-
-void Scene::update(float delta)
-{
-	for (int i=0; i < mObjects.size(); ++i)
-	{
-		mObjects[i]->update(delta);
-	}
-}
-
-void Scene::render()
-{
-// 	for (int i=0; i < mObjects.size(); ++i)
-// 	{
-// 		mObjects[i]->draw(mRendererRef, mCam, &mDirLight);
-// 	}
-}
-
-void Scene::exit()
-{
-	for (int i=0; i < mObjects.size(); ++i)
-	{
-		SAFE_DELETE(mObjects[i]);
 	}
 
-	mObjects.clear();
+	void Scene::update(float delta)
+	{
+		for (int i=0; i < mObjects.size(); ++i)
+		{
+			mObjects[i]->update(delta);
+		}
+	}
 
-    if(mBaseVAO != 0)
-		glDeleteVertexArrays(1, &mBaseVAO);
-	if(mBaseVtxBuffer != 0)
-		glDeleteBuffers(1, &mBaseVtxBuffer);
-	if(mBaseVboIndicesBuffer != 0)
-		glDeleteBuffers(1, &mBaseVboIndicesBuffer);
+	void Scene::preRender(Renderer & r)
+	{
+		if (!getVertexStr().empty() && !getFragmentStr().empty())
+			mShaderProgram = r.loadShaderProgram(getVertexStr().c_str(), getFragmentStr().c_str());
+	}
 
+	void Scene::render(Renderer& r)
+	{
+	// 	for (int i=0; i < mObjects.size(); ++i)
+	// 	{
+	// 		mObjects[i]->draw(mRendererRef, mCam, &mDirLight);
+	// 	}
+	}
+
+	void Scene::exit()
+	{
+		for (int i=0; i < mObjects.size(); ++i)
+		{
+			SAFE_DELETE(mObjects[i]);
+		}
+
+		mObjects.clear();
+
+		if(mBaseVAO != 0)
+			glDeleteVertexArrays(1, &mBaseVAO);
+		if(mBaseVtxBuffer != 0)
+			glDeleteBuffers(1, &mBaseVtxBuffer);
+		if(mBaseVboIndicesBuffer != 0)
+			glDeleteBuffers(1, &mBaseVboIndicesBuffer);
+
+	}
 }
