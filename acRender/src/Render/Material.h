@@ -8,27 +8,33 @@ using namespace std;
 
 namespace Acros
 {
+	enum ShaderDataSource
+	{
+		None,
+		Buffer,
+		Constant,
+	};
+
 	enum ShaderFlag
 	{
-		LightDir = 1 << 1,
-		LightColor = 1 << 2,
+		ReceiveLight = 1 << 1,
 
 		EyePos =  1 << 3,
 		Specular = 1<<4,
 
-		MV		= 1<<5,
-		WorldMatrix = 1<<6,
+		WorldSpace = 1<<6,
 		ScreenSpace =  1 << 7,
 
-		TexCoord	= 1 << 8,
-		Color		= 1 << 9
+		//Attribute
+		UVCoord		= 1 << 8,
+		Color		= 1 << 9,
+		Normal		= 1 << 10
 	};
 
 	enum ShaderType
 	{
 		Invalid = 0,
 
-		SimpleVertex,
 		VertexColor,	//All from vertex data
 		LightLambert,
 		LightBlinnPhong,

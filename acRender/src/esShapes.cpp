@@ -330,6 +330,53 @@ int esGenSquareGrid ( int size, GLfloat **vertices, GLuint **indices )
 }
 
 
+int esGenMitureBufferTriangle(GLfloat **vertices, GLfloat** colors,GLuint **indices)
+{
+	int numIndices = 3;
+	int strideBuff = 3 + 4;
+
+	// Allocate memory for buffers
+	if (vertices != NULL)
+	{
+		*vertices = (GLfloat*)malloc(sizeof(GLfloat) * strideBuff * numIndices);
+		(*vertices)[0] = 0;
+		(*vertices)[1] = 0.5;
+		(*vertices)[2] = 0;		//v0
+		(*vertices)[3] = 1;
+		(*vertices)[4] = 0;
+		(*vertices)[5] = 0;
+		(*vertices)[6] = 1;		//c0
+
+		(*vertices)[7] = -0.5f;	
+		(*vertices)[8] = -0.5;	
+		(*vertices)[9] = 0;		//v1
+		(*vertices)[10] = 0;		
+		(*vertices)[11] = 1;		
+		(*vertices)[12] = 0; 
+		(*vertices)[13] = 1;	//c1
+
+		(*vertices)[14] = 0.5f;	
+		(*vertices)[15] = -0.5;	
+		(*vertices)[16] = 0;	//v2
+		(*vertices)[17] = 0;		
+		(*vertices)[18] = 0;		
+		(*vertices)[19] = 1; 
+		(*vertices)[20] = 1;	//c2
+	}
+
+	// Generate the indices
+	if (indices != NULL)
+	{
+		*indices = (GLuint*)malloc(sizeof(GLuint) * numIndices);
+		
+		(*indices)[0]	  = 0;
+		(*indices)[0 + 1] = 1;
+		(*indices)[0 + 2] = 2;
+	}
+
+	return numIndices;
+}
+
 void logMessage(const char *formatStr, ...)
 {
 	va_list params;

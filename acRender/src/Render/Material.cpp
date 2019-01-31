@@ -13,9 +13,6 @@ namespace Acros
 		Verts.clear();
 		Frags.clear();
 
-		Verts.insert(make_pair(SimpleVertex, "simple_color_mvp.vert"));
-		Frags.insert(make_pair(SimpleVertex, "simple_color_mvp.frag"));
-
 		Verts.insert(make_pair(VertexColor, "simple_color_mvp.vert"));
 		Frags.insert(make_pair(VertexColor, "simple_color_mvp.frag"));
 
@@ -25,11 +22,11 @@ namespace Acros
 		Verts.insert(make_pair(LightBlinnPhong, "blinn_phong_mvp.vert"));
 		Frags.insert(make_pair(LightBlinnPhong, "blinn_phong_mvp.frag"));
 
-		Verts.insert(make_pair(Screen_Color, "simple_color_2d.vert"));
-		Frags.insert(make_pair(Screen_Color, "simple_color_2d.frag"));
+		Verts.insert(make_pair(Screen_Color, "screen_color_2d.vert"));
+		Frags.insert(make_pair(Screen_Color, "screen_color_2d.frag"));
 
-		Verts.insert(make_pair(Screen_Tex, "tex_2d.vert"));
-		Frags.insert(make_pair(Screen_Tex, "tex_2d.frag"));
+		Verts.insert(make_pair(Screen_Tex, "screen_tex_2d.vert"));
+		Frags.insert(make_pair(Screen_Tex, "screen_tex_2d.frag"));
 
 		
 	}
@@ -45,18 +42,17 @@ namespace Acros
 
 		switch (mType)
 		{
-		case SimpleVertex:
-			break;
 		case VertexColor:
+			mFlag = WorldSpace | Color;
 			break;
 		case LightLambert:
-			mFlag = LightDir | LightColor | WorldMatrix;
+			mFlag = ReceiveLight | WorldSpace | Normal;
 			break;
 		case LightBlinnPhong:
-			mFlag = LightDir | LightColor | EyePos | Specular | WorldMatrix;
+			mFlag = ReceiveLight | EyePos | Specular | WorldSpace | Normal;
 			break;
 		case Screen_Tex:
-			mFlag = TexCoord | ScreenSpace;
+			mFlag = UVCoord | ScreenSpace;
 			break;
 		case Screen_Color:
 			mFlag = Color | ScreenSpace;
@@ -66,20 +62,22 @@ namespace Acros
 			break;
 		}
 
-		if(!(mFlag & ScreenSpace))
+		assert((mFlag & ScreenSpace & WorldSpace) == 0);
+
+		if(mFlag & WorldSpace)
 			mMvpLoc = glGetUniformLocation(mShaderProgram, "u_mvpMatrix");
 
-		if (mFlag & MV)
-			mMvLoc = glGetUniformLocation(mShaderProgram, "u_mvMatrix");
+// 		if (mFlag & MV)
+// 			mMvLoc = glGetUniformLocation(mShaderProgram, "u_mvMatrix");
 
-		if (mFlag & WorldMatrix)
-			mWorldMatrixLoc = glGetUniformLocation(mShaderProgram, "u_WorldMatrix");
+// 		if (mFlag & WorldMatrix)
+// 			mWorldMatrixLoc = glGetUniformLocation(mShaderProgram, "u_WorldMatrix");
 
-		if (mFlag & LightDir)
+		if (mFlag & ReceiveLight)
+		{
 			mLightDir = glGetUniformLocation(mShaderProgram, "u_light_dir");
-
-		if (mFlag & LightColor)
 			mLightColor = glGetUniformLocation(mShaderProgram, "u_lightColor");
+		}
 
 		if (mFlag & EyePos)
 			mEyePos = glGetUniformLocation(mShaderProgram, "u_eye_pos");

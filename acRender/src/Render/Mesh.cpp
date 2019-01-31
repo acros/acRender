@@ -6,6 +6,12 @@
 const int POSTITION_LOC = 0;
 const int COLOR_LOC = 1;
 const int NORMAL_LOC = 2;
+const int UV_COORD_LOC = 3;
+
+const int POS_SIZE = 3;
+const int COLOR_APLHPA_SIZE = 4;
+const int COLOR_SIZE = 3;
+const int NORMAL_SIZE = 3;
 
 namespace Acros
 {
@@ -14,15 +20,21 @@ namespace Acros
 		, indices(nullptr)
 		, normals(nullptr)
 		, colors(nullptr)
-		, vertexSize(0)
+		, mBufferStride(0)
 		, indexSize(0)
 		, mMaterial(nullptr)
 		, mVao(0)
 		, mNormBuf(0)
 		, mColorBuf(0)
+		, mMeshType(MeshType::MultiBuffer)
 	{
 		mVbo[0] = 0;
 		mVbo[1] = 0;
+
+		for (int i = 0 ; i < 4; ++i)
+		{
+			mPropertySource[i] = MeshPropertyDataSource::None;
+		}
 	}
 
 	Mesh::~Mesh()
@@ -32,17 +44,10 @@ namespace Acros
 		glDeleteBuffers(1, &mNormBuf);
 		glDeleteBuffers(1, &mColorBuf);
 
-		if (mShape == ST_ColorTriangle)
-		{
-
-		}
-		else
-		{
-			SAFE_FREE(vertices);
-			SAFE_FREE(indices);
-			SAFE_FREE(normals);
-			SAFE_FREE(colors);
-		}
+		SAFE_FREE(vertices);
+		SAFE_FREE(indices);
+		SAFE_FREE(normals);
+		SAFE_FREE(colors);
 
 		SAFE_DELETE(mMaterial);
 	}
@@ -50,6 +55,9 @@ namespace Acros
 	void Mesh::createTriagle()
 	{
 		mShape = ST_ColorTriangle;
+		mMeshType = SingleBuffer;
+		indexSize = esGenMitureBufferTriangle(&vertices, &colors, &indices);
+		mBufferStride = 7;
 
 		mMaterial = new Material(VertexColor);
 	}
@@ -60,9 +68,7 @@ namespace Acros
 
 		//Load the index and init buffer, use VBO here
 		indexSize = esGenCube(1.0f, &vertices, NULL, NULL, &indices);
-
-		//Hack: Cube has 24 vertex
-		vertexSize = 24;
+		mBufferStride = 24;
 
 		mMaterial = new Material(VertexColor);
 		mMaterial->setDiffuse(AcColor4(0.8f, 0.6f, 0.0f, 1.0f));
@@ -74,9 +80,10 @@ namespace Acros
 
 		int edgeTrigleNums = 3;
 		indexSize = esGenSquareGrid(edgeTrigleNums, &vertices, &indices);
-		vertexSize = edgeTrigleNums * edgeTrigleNums;
+		mBufferStride = edgeTrigleNums * edgeTrigleNums;
 
 		mMaterial = new Material(VertexColor);
+		mMaterial->setDiffuse(AcColor4(0.7f, 0.7f, 0.7f, 1.0f));
 	}
 
 	void Mesh::createSphere()
@@ -85,10 +92,7 @@ namespace Acros
 
 		int numSlices = 40;
 		indexSize = esGenSphere(numSlices,1.0f, &vertices, &normals,&colors, NULL, &indices);
-		int numParallels = numSlices / 2;
-		vertexSize = (numParallels + 1) * (numSlices + 1);
-
-		normSize = vertexSize;
+		mBufferStride = (numSlices / 2 + 1) * (numSlices + 1);
 
 		mMaterial = new Material(LightLambert);
 		mMaterial->setDiffuse(AcColor4(0.7f, 0.7f, 0.7f, 1.0f));
@@ -98,7 +102,6 @@ namespace Acros
 	{
 		mMaterial->initShader(context);
 
-		//VBO rely on VAO
 		glGenVertexArrays(1, &mVao);
 		glBindVertexArray(mVao);
 
@@ -106,139 +109,104 @@ namespace Acros
 		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
-		if (mShape == ST_ColorTriangle)
+		if (mMeshType == SingleBuffer)
 		{
-			//All vertex data from one buffer
-			GLfloat vtx[3 * 7] =	{
-				0.0f,  0.5f, 0.0f,        // v0
-				1.0f,  0.0f, 0.0f, 1.0f,  // c0
-				-0.5f, -0.5f, 0.0f,       // v1
-				0.0f,  1.0f, 0.0f, 1.0f,  // c1
-				0.5f, -0.5f, 0.0f,        // v2
-				0.0f,  0.0f, 1.0f, 1.0f,  // c2
-			};
-			GLuint idx[3] = { 0, 1, 2 }; //Must Remain a copy in memory
-
-			vertices = vtx;
-			indices = idx;
-			indexSize = 3;
-			vertexSize = 7;
-
-			//Mixture Vertex Array - One VertexBuff
-			glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
-		
-			glEnableVertexAttribArray(POSTITION_LOC);
-			glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
-			GLint offset = sizeof(GLfloat) * 3;
-			glEnableVertexAttribArray(COLOR_LOC);
-			glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), (const void*)offset);
-
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLuint), indices, GL_STATIC_DRAW);
-		}
-		else if (mShape == ST_Sphere)
-		{
-			//Data from different buffs
-			//An element array with multiple vertex buffers
-			glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-			glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(POSTITION_LOC);
-			glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
-
-			glGenBuffers(1, &mColorBuf);
-			glBindBuffer(GL_ARRAY_BUFFER, mColorBuf);
-			glBufferData(GL_ARRAY_BUFFER, normSize * 3 * sizeof(GLfloat), colors, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(COLOR_LOC);
-			glVertexAttribPointer(COLOR_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
-
-			glGenBuffers(1, &mNormBuf);
-			glBindBuffer(GL_ARRAY_BUFFER, mNormBuf);
-			glBufferData(GL_ARRAY_BUFFER, normSize * 3 * sizeof(GLfloat), normals, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(NORMAL_LOC);
-			glVertexAttribPointer(NORMAL_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
-
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
+			prepareBufferData();
 		}
 		else
 		{
-			//Vertex buffers & Constants
-			glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
+			prepareMultiBufferData();
 		}
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 	}
 
+
+	void Mesh::prepareBufferData()
+	{
+		//Mixture Vertex Array - One VertexBuff - 
+		//顶点数据来自同一缓冲,只需要使用一个GL_ARRAY_BUFFER,并在属性中指定偏移量
+		glBufferData(GL_ARRAY_BUFFER, POS_SIZE * sizeof(GLfloat) * mBufferStride, vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(POSTITION_LOC);
+		glVertexAttribPointer(POSTITION_LOC, POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * mBufferStride, 0);
+		mPropertySource[POSTITION_LOC] = MeshPropertyDataSource::Buffer;
+
+		glEnableVertexAttribArray(COLOR_LOC);
+		GLint offset = sizeof(GLfloat) * POS_SIZE;
+		glVertexAttribPointer(COLOR_LOC, COLOR_APLHPA_SIZE, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * mBufferStride, (const void*)offset);
+		mPropertySource[COLOR_LOC] = MeshPropertyDataSource::Buffer;
+	}
+
+	void Mesh::prepareMultiBufferData()
+	{
+		//Data from different buffs
+			//An element array with multiple vertex buffers
+			//顶点数据来个多个缓冲，需要为每个缓冲设定一个GL_ARRAY_BUFFER
+		if (vertices != nullptr) {
+			glBufferData(GL_ARRAY_BUFFER, mBufferStride * POS_SIZE * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(POSTITION_LOC);
+			glVertexAttribPointer(POSTITION_LOC, POS_SIZE, GL_FLOAT, GL_FALSE, POS_SIZE * sizeof(GLfloat), NULL);
+			mPropertySource[POSTITION_LOC] = MeshPropertyDataSource::Buffer;
+		}
+
+		if (colors != nullptr) {
+			glGenBuffers(1, &mColorBuf);
+			glBindBuffer(GL_ARRAY_BUFFER, mColorBuf);
+			glBufferData(GL_ARRAY_BUFFER, mBufferStride * COLOR_SIZE * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(COLOR_LOC);
+			glVertexAttribPointer(COLOR_LOC, COLOR_SIZE, GL_FLOAT, GL_FALSE, COLOR_SIZE * sizeof(GLfloat), NULL);
+			mPropertySource[COLOR_LOC] = MeshPropertyDataSource::Buffer;
+		}
+
+		if (normals != nullptr) {
+			glGenBuffers(1, &mNormBuf);
+			glBindBuffer(GL_ARRAY_BUFFER, mNormBuf);
+			glBufferData(GL_ARRAY_BUFFER, mBufferStride * NORMAL_SIZE * sizeof(GLfloat), normals, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(NORMAL_LOC);
+			glVertexAttribPointer(NORMAL_LOC, NORMAL_SIZE, GL_FLOAT, GL_FALSE, NORMAL_SIZE * sizeof(GLfloat), NULL);
+			mPropertySource[NORMAL_LOC] = MeshPropertyDataSource::Buffer;
+		}
+	}
+
 	void Mesh::draw(AcTransform& selfTransform, Renderer& context, Camera * cam, const Light * light)
 	{
 		const AcMatrix& m = selfTransform.getModelMat();
-		const AcMatrix& mv = cam->getViewMat() * m;
 		const AcMatrix mvp = cam->getProjMat() * cam->getViewMat() * m;
 
 		glUseProgram(mMaterial->mShaderProgram);
 
-		int shaderFlag = mMaterial->GetFlag();
-		if (shaderFlag & ShaderFlag::MV)
-		{
-			glUniform4fv(mMaterial->mMvLoc, 1, glm::value_ptr(mv));
-		}
-
-		if (shaderFlag & ShaderFlag::WorldMatrix)
-		{
-			glUniform4fv(mMaterial->mWorldMatrixLoc, 1, glm::value_ptr(m));
-		}
-
+ 		int shaderFlag = mMaterial->GetFlag();
 		if (light != nullptr)
 		{
-			if (shaderFlag & ShaderFlag::LightDir){
+			if (shaderFlag & ShaderFlag::ReceiveLight){
 				const AcVector& lDir = light->getDir();
 				glUniform4fv(mMaterial->mLightDir, 1, glm::value_ptr(lDir));
-			}
-
-			if (shaderFlag & ShaderFlag::LightColor){
 				const AcColor3& lColor = light->getColor();
 				glUniform4fv(mMaterial->mLightColor, 1, glm::value_ptr(lColor));
 			}
 		}
 
 		glBindVertexArray(mVao);
-		if (mShape == ST_ColorTriangle || mShape == ST_Sphere)
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
+		if (shaderFlag & WorldSpace)
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-			if (!(shaderFlag & ScreenSpace))
-			{
-				const float* mats = glm::value_ptr(mvp);
-				glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
-			}
-			glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			const float* mats = glm::value_ptr(mvp);
+			glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		}
-		else
+
+		if ((shaderFlag & ShaderFlag::Color) && mPropertySource[COLOR_LOC] == MeshPropertyDataSource::None)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
-			glEnableVertexAttribArray(POSTITION_LOC);	
-			glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
-
-			if (mShape == ST_Cube)
-				glVertexAttrib4f(COLOR_LOC, 0.8f, 0.6f, 0.0f, 1.0f);		
-			else if (mShape == ST_Plane)
-				glVertexAttrib4f(COLOR_LOC, 0.7f, 0.7f, 0.7f, 1.0f);
-			else
-				assert(false);
-
-			glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-			glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
-
-			glDisableVertexAttribArray(POSTITION_LOC);	
-			glDisableVertexAttribArray(COLOR_LOC);	
-
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			//No color buff, use material value
+			const AcVector4& c = mMaterial->getDiffuse();
+			glVertexAttrib4f(COLOR_LOC, c.r, c.g, c.b, c.a);
 		}
+
+		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-
 	}
 }

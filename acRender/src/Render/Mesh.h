@@ -6,9 +6,22 @@
 
 namespace Acros
 {
-
 	class Mesh
 	{
+		enum MeshType
+		{
+			Unknown,
+			SingleBuffer,
+			MultiBuffer,
+		};
+
+		enum MeshPropertyDataSource
+		{
+			None,
+			Buffer,
+			Constant
+		};
+
 	public:
 		Mesh();
 		~Mesh();
@@ -23,6 +36,12 @@ namespace Acros
 		void draw(AcTransform& selfTransform, Renderer& context, class Camera* cam, const Light* l = nullptr);
 
 	protected:
+		void prepareBufferData();
+
+		void prepareMultiBufferData();
+
+	protected:
+		MeshType	mMeshType;
 		ShapeType	mShape;
 
 		GLuint		mVao;
@@ -31,14 +50,15 @@ namespace Acros
 		GLuint		mColorBuf;
 		GLuint		mNormBuf;
 
-		GLuint		normSize;
-		GLuint		vertexSize;
+		GLuint		mBufferStride;
 		GLuint		indexSize;
 
 		GLfloat*	normals;
 		GLfloat*	vertices;
 		GLfloat*	colors;
 		GLuint*		indices;
+
+		MeshPropertyDataSource	mPropertySource[4];
 
 		class Material*	mMaterial;
 	};

@@ -1,6 +1,5 @@
 #version 400 core
 uniform mat4 u_mvpMatrix;
-uniform mat4 u_WorldMatrix;
 uniform vec4 u_light_dir;
 uniform vec4 u_lightColor;
 

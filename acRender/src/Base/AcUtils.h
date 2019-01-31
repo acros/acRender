@@ -18,6 +18,8 @@ int  esGenCube(float scale, GLfloat **vertices, GLfloat **normals,
 
 int  esGenSquareGrid(int size, GLfloat **vertices, GLuint **indices);
 
+int esGenMitureBufferTriangle(GLfloat **vertices, GLfloat** colors, GLuint **indices);
+
 
 #define SAFE_DELETE(N) {if((N)!=nullptr) {delete (N); (N) = nullptr;}}
 #define SAFE_FREE(N) {if((N)!=nullptr) {free(N); (N) = nullptr;}}
