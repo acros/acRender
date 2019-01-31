@@ -1,5 +1,8 @@
 #include "AcWorld.h"
 #include "Scene/Scene.hpp"
+#include <string>
+
+using namespace std;
 
 namespace Acros
 {
@@ -84,13 +87,10 @@ namespace Acros
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::RadioButton(Scene::SceneList[0].c_str(), &mSceneSelection, 0); ImGui::SameLine();
-		ImGui::RadioButton(Scene::SceneList[1].c_str(), &mSceneSelection, 1); ImGui::SameLine();
-		ImGui::RadioButton(Scene::SceneList[2].c_str(), &mSceneSelection, 2); ImGui::SameLine();
-		ImGui::RadioButton(Scene::SceneList[3].c_str(), &mSceneSelection, 3);
-		ImGui::RadioButton(Scene::SceneList[4].c_str(), &mSceneSelection, 4); ImGui::SameLine();
-		ImGui::RadioButton(Scene::SceneList[5].c_str(), &mSceneSelection, 5); ImGui::SameLine();
-		ImGui::RadioButton(Scene::SceneList[6].c_str(), &mSceneSelection, 6); //ImGui::SameLine();
+		for (size_t i = 0; i < Scene::SceneListLen; ++i)
+		{
+			ImGui::RadioButton(Scene::SceneList[i].c_str(), &mSceneSelection, i); 
+		}
 
 		if (mRunningScene != nullptr)
 		{

@@ -21,10 +21,5 @@ public:
 	virtual void exit()override;
 protected:
 
-	bool		mUseElementDraw;
-
 	GLuint          mColorBuffer;
-
-	static const GLushort vertex_indices[];
-
 };

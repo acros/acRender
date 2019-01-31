@@ -19,8 +19,9 @@
 
 namespace Acros {
 
-	const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
 
+	const string Scene::SceneList[] = { "Simple Triangle","FBO","Light","Particle","Texture","Triangle","Vertex Obj" };
+	const int Scene::SceneListLen = sizeof(Scene::SceneList) / sizeof(Scene::SceneList[0]);
 
 	Scene* Scene::CreateScene(int index)
 	{

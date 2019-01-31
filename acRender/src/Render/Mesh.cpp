@@ -51,7 +51,7 @@ namespace Acros
 	{
 		mShape = ST_ColorTriangle;
 
-		mMaterial = new Material();
+		mMaterial = new Material(VertexColor);
 	}
 
 	void Mesh::createCube()
@@ -64,7 +64,8 @@ namespace Acros
 		//Hack: Cube has 24 vertex
 		vertexSize = 24;
 
-		mMaterial = new Material();
+		mMaterial = new Material(VertexColor);
+		mMaterial->setDiffuse(AcColor4(0.8f, 0.6f, 0.0f, 1.0f));
 	}
 
 	void Mesh::createPlane()
@@ -75,8 +76,7 @@ namespace Acros
 		indexSize = esGenSquareGrid(edgeTrigleNums, &vertices, &indices);
 		vertexSize = edgeTrigleNums * edgeTrigleNums;
 
-
-		mMaterial = new Material();
+		mMaterial = new Material(VertexColor);
 	}
 
 	void Mesh::createSphere()
@@ -90,13 +90,13 @@ namespace Acros
 
 		normSize = vertexSize;
 
-		mMaterial = new Material();
+		mMaterial = new Material(LightLambert);
+		mMaterial->setDiffuse(AcColor4(0.7f, 0.7f, 0.7f, 1.0f));
 	}
 
 	void Mesh::initDraw(Renderer& context)
 	{
-		ShaderType sType = (mShape == ST_Sphere) ? LightLambert : VertexColor;
-		mMaterial->initShader(context, sType);
+		mMaterial->initShader(context);
 
 		//VBO rely on VAO
 		glGenVertexArrays(1, &mVao);
@@ -108,6 +108,7 @@ namespace Acros
 
 		if (mShape == ST_ColorTriangle)
 		{
+			//All vertex data from one buffer
 			GLfloat vtx[3 * 7] =	{
 				0.0f,  0.5f, 0.0f,        // v0
 				1.0f,  0.0f, 0.0f, 1.0f,  // c0
@@ -123,18 +124,21 @@ namespace Acros
 			indexSize = 3;
 			vertexSize = 7;
 
-			//Mix Pos&Color Vertex - One VertexBuff
+			//Mixture Vertex Array - One VertexBuff
 			glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat) * vertexSize, vertices, GL_STATIC_DRAW);
 		
+			glEnableVertexAttribArray(POSTITION_LOC);
 			glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), 0);
 			GLint offset = sizeof(GLfloat) * 3;
-			glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE,sizeof(GLfloat) * (3 + 4), (const void*)offset);
+			glEnableVertexAttribArray(COLOR_LOC);
+			glVertexAttribPointer(COLOR_LOC, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * (3 + 4), (const void*)offset);
 
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLuint), indices, GL_STATIC_DRAW);
 		}
 		else if (mShape == ST_Sphere)
 		{
-			//A element array with multiple vertex buffers
+			//Data from different buffs
+			//An element array with multiple vertex buffers
 			glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 			glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(POSTITION_LOC);
@@ -152,11 +156,11 @@ namespace Acros
 			glEnableVertexAttribArray(NORMAL_LOC);
 			glVertexAttribPointer(NORMAL_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
 		}
 		else
 		{
+			//Vertex buffers & Constants
 			glBufferData(GL_ARRAY_BUFFER, vertexSize * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(GLuint), indices, GL_STATIC_DRAW);
 		}
@@ -173,7 +177,6 @@ namespace Acros
 		const AcMatrix mvp = cam->getProjMat() * cam->getViewMat() * m;
 
 		glUseProgram(mMaterial->mShaderProgram);
-		glBindVertexArray(mVao);
 
 		int shaderFlag = mMaterial->GetFlag();
 		if (shaderFlag & ShaderFlag::MV)
@@ -199,30 +202,16 @@ namespace Acros
 			}
 		}
 
-		if (mShape == ST_ColorTriangle)
+		glBindVertexArray(mVao);
+		if (mShape == ST_ColorTriangle || mShape == ST_Sphere)
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
-			glEnableVertexAttribArray(POSTITION_LOC);
-			glEnableVertexAttribArray(COLOR_LOC);
-
-			const float* mats = glm::value_ptr(mvp);
-			glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-
-			glDisableVertexAttribArray(POSTITION_LOC);
-			glDisableVertexAttribArray(COLOR_LOC);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		}
-		else if (mShape == ST_Sphere)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
-
-			glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-
+			if (!(shaderFlag & ScreenSpace))
+			{
+				const float* mats = glm::value_ptr(mvp);
+				glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
+			}
 			glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
-
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 		else
@@ -234,7 +223,7 @@ namespace Acros
 			glVertexAttribPointer(POSTITION_LOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const void*)NULL);	//Pure position vertex array
 
 			if (mShape == ST_Cube)
-				glVertexAttrib4f(COLOR_LOC, 0.8f, 0.6f, 0.0f, 1.0f);		//Set the color to a Const value
+				glVertexAttrib4f(COLOR_LOC, 0.8f, 0.6f, 0.0f, 1.0f);		
 			else if (mShape == ST_Plane)
 				glVertexAttrib4f(COLOR_LOC, 0.7f, 0.7f, 0.7f, 1.0f);
 			else
@@ -249,6 +238,7 @@ namespace Acros
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
+		glBindVertexArray(0);
 
 	}
 }

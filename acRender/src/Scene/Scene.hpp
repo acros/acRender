@@ -33,8 +33,8 @@ namespace Acros
 		const string& getFragmentStr()const { return mFragStr; }
 
 		virtual void enter();
-
 		virtual void update(float delta);
+		virtual void exit();
 
 		virtual void initRender(Renderer& r) {}
 
@@ -44,7 +44,6 @@ namespace Acros
 
 		virtual void quitRender(Renderer& r) {}
 
-		virtual void exit();
 
 #if ACROS_USE_IMGUI
 		virtual void renderImgui() {}
@@ -67,6 +66,7 @@ namespace Acros
 
 	private:
 		const static string SceneList[];
+		const static int SceneListLen;
 	};
 
 }
