@@ -14,8 +14,8 @@ TextureScene::TextureScene()
 	, mTimeAcculation(0)
 	, mSubmitTex(false)
 {
-	Acros::FileManager::loadShaderFile("tex_2d.vert", mVertStr);
-	Acros::FileManager::loadShaderFile("tex_2d.frag", mFragStr);
+	Acros::FileManager::loadShaderFile("screen_tex_2d.vert", mVertStr);
+	Acros::FileManager::loadShaderFile("screen_tex_2d.frag", mFragStr);
 }
 
 
@@ -52,11 +52,11 @@ void TextureScene::enter()
 	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);// (GLfloat*)vVertices);
-	glEnableVertexAttribArray(0);//For Vertex
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
+	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));// offset);
-	glEnableVertexAttribArray(1);//For UV
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(3);
 
 	glGenBuffers(1, &mBaseVboIndicesBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
@@ -109,13 +109,13 @@ void TextureScene::render(Renderer& r)
  	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(3);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(3);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

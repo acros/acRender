@@ -156,9 +156,6 @@
     <ClInclude Include="..\..\..\src\Scene\ParticleScene.h">
       <Filter>acRender\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scene\Scene.hpp">
-      <Filter>acRender\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\TextureScene.h">
       <Filter>acRender\Scene</Filter>
     </ClInclude>
@@ -179,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\AcWorld.h">
       <Filter>acRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Scene\Scene.hpp">
+      <Filter>acRender\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

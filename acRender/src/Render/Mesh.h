@@ -26,10 +26,10 @@ namespace Acros
 		Mesh();
 		~Mesh();
 
-		void createTriagle();
-		void createCube();
-		void createPlane();
-		void createSphere();
+		void createTriagle(ShaderType shader);
+		void createCube(ShaderType shader);
+		void createPlane(ShaderType shader);
+		void createSphere(ShaderType shader);
 
 		void initDraw(Renderer& context);
 

@@ -3,7 +3,6 @@
 //  OpenGL_ES_Lab
 //
 //  Created by ZhaoZhihui on 16/8/2.
-//  Copyright © 2016年 ZhaoZhihui. All rights reserved.
 //
 
 #include "Scene.hpp"
@@ -20,6 +19,19 @@ namespace Acros {
 
 	const string Scene::SceneList[] = { "FBO","Light","Particle","Texture","Vertex Obj" };
 	const int Scene::SceneListLen = sizeof(Scene::SceneList) / sizeof(Scene::SceneList[0]);
+
+	void Scene::renderImgui()
+	{
+		static AcVector LDIR(1, -1, 1);
+		ImGui::SliderFloat("X", &LDIR.x, -1, 1);
+		ImGui::SliderFloat("Y", &LDIR.y, -1, 1);
+		ImGui::SliderFloat("Z", &LDIR.z, -1, 1);
+		mDirLight.setDir(LDIR);
+
+		static float color[3]{ 1,1,1 };
+		ImGui::ColorEdit3("Light Color", color);
+		mDirLight.setColor(AcColor3(color[0], color[1], color[2]));
+	}
 
 	Scene* Scene::CreateScene(int index)
 	{

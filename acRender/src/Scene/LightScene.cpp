@@ -93,15 +93,7 @@ namespace Acros
 #if ACROS_USE_IMGUI
 	void LightScene::renderImgui()
 	{
-		static AcVector LDIR(1, -1, 1);
-		ImGui::SliderFloat("X", &LDIR.x, -1, 1);
-		ImGui::SliderFloat("Y", &LDIR.y, -1, 1);
-		ImGui::SliderFloat("Z", &LDIR.z, -1, 1);
-		mDirLight.setDir(LDIR);
-
-		static float color[3]{ 1,1,1 };
-		ImGui::ColorEdit3("Light Color", color);
-		mDirLight.setColor(AcColor3(color[0], color[1], color[2]));
+		Scene::renderImgui();
 		// 	AcQuat quat = glm::angleAxis(glm::radians(angle), rot);
 	}
 #endif

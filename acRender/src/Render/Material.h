@@ -15,35 +15,6 @@ namespace Acros
 		Constant,
 	};
 
-	enum ShaderFlag
-	{
-		ReceiveLight = 1 << 1,
-
-		EyePos =  1 << 3,
-		Specular = 1<<4,
-
-		WorldSpace = 1<<6,
-		ScreenSpace =  1 << 7,
-
-		//Attribute
-		UVCoord		= 1 << 8,
-		Color		= 1 << 9,
-		Normal		= 1 << 10
-	};
-
-	enum ShaderType
-	{
-		Invalid = 0,
-
-		VertexColor,	//All from vertex data
-		LightLambert,
-		LightBlinnPhong,
-
-		Screen_Color,
-		Screen_Tex
-	};
-
-
 	class Material
 	{
 	public:

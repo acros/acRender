@@ -1,11 +1,3 @@
-//
-//  Scene.hpp
-//  OpenGL_ES_Lab
-//
-//  Created by ZhaoZhihui on 16/8/2.
-//  Copyright © 2016年 ZhaoZhihui. All rights reserved.
-//
-
 #ifndef Scene_hpp
 #define Scene_hpp
 
@@ -46,7 +38,7 @@ namespace Acros
 
 
 #if ACROS_USE_IMGUI
-		virtual void renderImgui() {}
+		virtual void renderImgui();
 #endif 
 
 	protected:
@@ -70,6 +62,4 @@ namespace Acros
 	};
 
 }
-
-
-#endif /* Scene_hpp */
+#endif 

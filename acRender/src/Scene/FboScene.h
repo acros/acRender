@@ -27,7 +27,7 @@ namespace Acros
 
 	protected:
 
-		void innerDrawTriangle();
+		void drawMiniWindow();
 
 	protected:
 		bool		mRenderToTexture;

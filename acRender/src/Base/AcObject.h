@@ -2,9 +2,12 @@
 
 #include "Render/Renderer.h"
 #include "Base/AcUtils.h"
+#include "Render/Mesh.h"
 
 namespace Acros
 {
+	enum ShaderType;
+
 	//The basic object
 	class AcObject {
 	public:
@@ -29,6 +32,7 @@ namespace Acros
 
 		//Debug use
 		void createShape(ShapeType	shape);
+		void createShape(ShapeType	shape,ShaderType shader);
 
 	#if ACROS_USE_IMGUI
 		virtual void drawImgui();

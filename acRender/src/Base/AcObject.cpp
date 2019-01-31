@@ -38,7 +38,12 @@ namespace Acros
 		}
 	}
 
-	void AcObject::createShape(ShapeType	shape)
+	void AcObject::createShape(ShapeType shape)
+	{
+		createShape(shape, ShaderType::Invalid);
+	}
+
+	void AcObject::createShape(ShapeType shape, ShaderType shader)
 	{
 		if (mMesh != nullptr)
 			delete mMesh;
@@ -48,16 +53,16 @@ namespace Acros
 		switch (shape)
 		{
 		case ST_Cube:
-			mMesh->createCube();
+			mMesh->createCube(shader);
 			break;
 		case ST_Plane:
-			mMesh->createPlane();
+			mMesh->createPlane(shader);
 			break;
 		case ST_ColorTriangle:
-			mMesh->createTriagle();
+			mMesh->createTriagle(shader);
 			break;
 		case ST_Sphere:
-			mMesh->createSphere();
+			mMesh->createSphere(shader);
 			break;
 		default:
 			assert(false);
@@ -66,7 +71,7 @@ namespace Acros
 
 	}
 
-	#if ACROS_USE_IMGUI
+#if ACROS_USE_IMGUI
 	void AcObject::drawImgui()
 	{
 

@@ -52,29 +52,35 @@ namespace Acros
 		SAFE_DELETE(mMaterial);
 	}
 
-	void Mesh::createTriagle()
+	void Mesh::createTriagle(ShaderType shader)
 	{
 		mShape = ST_ColorTriangle;
 		mMeshType = SingleBuffer;
 		indexSize = esGenMitureBufferTriangle(&vertices, &colors, &indices);
 		mBufferStride = 7;
-
-		mMaterial = new Material(VertexColor);
+		if (shader == Invalid)
+			shader = VertexColor;
+		mMaterial = new Material(shader);
 	}
 
-	void Mesh::createCube()
+	void Mesh::createCube(ShaderType shader)
 	{
 		mShape = ST_Cube;
 
 		//Load the index and init buffer, use VBO here
-		indexSize = esGenCube(1.0f, &vertices, NULL, NULL, &indices);
+		indexSize = esGenCube(1.0f, &vertices, &normals, NULL, &indices);
 		mBufferStride = 24;
+		if (shader == Invalid)
+		{
+			shader = LightLambert;
+			mPropertySource[COLOR_LOC] = MeshPropertyDataSource::Constant;
+		}
 
-		mMaterial = new Material(VertexColor);
+		mMaterial = new Material(shader);
 		mMaterial->setDiffuse(AcColor4(0.8f, 0.6f, 0.0f, 1.0f));
 	}
 
-	void Mesh::createPlane()
+	void Mesh::createPlane(ShaderType shader)
 	{
 		mShape = ST_Plane;
 
@@ -82,19 +88,29 @@ namespace Acros
 		indexSize = esGenSquareGrid(edgeTrigleNums, &vertices, &indices);
 		mBufferStride = edgeTrigleNums * edgeTrigleNums;
 
-		mMaterial = new Material(VertexColor);
+		if (shader == Invalid)
+		{
+			shader = VertexColor;
+			mPropertySource[COLOR_LOC] = MeshPropertyDataSource::Constant;
+		}
+
+		mMaterial = new Material(shader);
 		mMaterial->setDiffuse(AcColor4(0.7f, 0.7f, 0.7f, 1.0f));
 	}
 
-	void Mesh::createSphere()
+	void Mesh::createSphere(ShaderType shader)
 	{
 		mShape = ST_Sphere;
 
 		int numSlices = 40;
 		indexSize = esGenSphere(numSlices,1.0f, &vertices, &normals,&colors, NULL, &indices);
 		mBufferStride = (numSlices / 2 + 1) * (numSlices + 1);
+		if (shader == Invalid)
+		{
+			shader = LightLambert;
+		}
 
-		mMaterial = new Material(LightLambert);
+		mMaterial = new Material(shader);
 		mMaterial->setDiffuse(AcColor4(0.7f, 0.7f, 0.7f, 1.0f));
 	}
 
@@ -198,7 +214,7 @@ namespace Acros
 			glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, mats);
 		}
 
-		if ((shaderFlag & ShaderFlag::Color) && mPropertySource[COLOR_LOC] == MeshPropertyDataSource::None)
+		if (/*(shaderFlag & ShaderFlag::Color) &&*/ mPropertySource[COLOR_LOC] == MeshPropertyDataSource::Constant)
 		{
 			//No color buff, use material value
 			const AcVector4& c = mMaterial->getDiffuse();

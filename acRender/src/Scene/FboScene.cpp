@@ -165,8 +165,6 @@ namespace Acros
 			GLenum state = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			if (state != GL_FRAMEBUFFER_COMPLETE)
 				assert(false);
-
-			ACROS_GL_CHECK_ERROR("Texture create");
 		}
 	}
 
@@ -191,8 +189,6 @@ namespace Acros
 
 	void FboScene::render(Renderer& r)
 	{
-		r.beginDraw();
-
 		if (mRenderToTexture)
 		{
 			glUseProgram(0);
@@ -211,23 +207,14 @@ namespace Acros
 			glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 
 			// clear depth buffer
-			mCube->draw(r, mCam);
+			mCube->draw(r, mCam,&mDirLight);
 			mGround->draw(r, mCam);
-
-			ACROS_GL_CHECK_ERROR("Render to texture");
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
-		glUseProgram(0);
-
-		glClearColor(0.1f, 0.1f, 0.1f, 0.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		r.beginDraw();
 		glViewport(0, 0, 1280, 720);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
 
 		mCube->draw(r, mCam);
 		mGround->draw(r, mCam);
@@ -236,14 +223,14 @@ namespace Acros
 		if (drawScreenMiniWindow && mRenderToTexture)
 		{
 			//Render the scene texture to a mini window
-			innerDrawTriangle();
+			drawMiniWindow();
 		}
 
 		r.endDraw();
 	}
 
 
-	void FboScene::innerDrawTriangle()
+	void FboScene::drawMiniWindow()
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -262,9 +249,6 @@ namespace Acros
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mTexId[0]);
 		glUseProgram(mShaderProgram);
-
-		//	GLint samplerLoc = glGetUniformLocation(mShaderProgram, "s_texture");
-		//	glUniform1i(samplerLoc, 0);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 
