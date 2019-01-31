@@ -2,7 +2,6 @@
 
 #include "Scene.hpp"
 #include "Camera/Camera.h"
-#include "Render/AcLight.h"
 
 /*
 	The Light scene
@@ -28,14 +27,7 @@ public:
 
 protected:
 
-//	GLuint		mFbo;
-
 	float		mCameraMoveTime;
 
 	Camera*		mCam;
-	Acros::Light mDirLight;
-
-	AcObject*	mCube;
-	AcObject*	mGround;
-
 };

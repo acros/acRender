@@ -18,7 +18,7 @@ public:
 
 	void initDraw(Renderer& context);
 
-	void draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* l = nullptr);
+	void draw(AcTransform& selfTransform,Renderer& context, class Camera* cam, const Acros::Light* l = nullptr);
 
 protected:
 	ShapeType	mShape;

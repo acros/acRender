@@ -2,11 +2,17 @@
 #include "Base/AcUtils.h"
 #include "File/AcFileManager.h"
 
+const GLsizei width = 3;
+const GLsizei height = 3;
+GLubyte pixels[width * height * 3];
 
 TextureScene::TextureScene(Renderer& renderer)
 	: Scene(renderer)
 	, mSampleLocation(0)
 	, mTexId(0)
+	, mTexUpdateDuration(3)
+	, mTimeAcculation(0)
+	, mSubmitTex(false)
 {
 	Acros::FileManager::loadShaderFile("tex_2d.vert", mVertStr);
 	Acros::FileManager::loadShaderFile("tex_2d.frag", mFragStr);
@@ -25,8 +31,6 @@ void TextureScene::enter()
 
 	glUseProgram(mShaderProgram);
 
-	// Set the sampler texture unit to 0
-//	mSampleLocation = glGetUniformLocation(mShaderProgram, "s_texture");
 	mTexId = createSimpleTexture2D();
 
 	//VBO rely on VAO
@@ -63,6 +67,24 @@ void TextureScene::enter()
 
 }
 
+void TextureScene::update(float delta)
+{
+	Scene::update(delta);
+
+	mTimeAcculation += delta;
+	if (mTimeAcculation > mTexUpdateDuration)
+	{
+		mTimeAcculation = 0;
+
+		for (int i = 0; i < width * height * 3; ++i)
+		{
+			pixels[i] = rand() % 256;
+		}
+
+		mSubmitTex = true;
+	}
+}
+
 void TextureScene::render()
 {
 	mRendererRef.beginDraw();
@@ -71,18 +93,21 @@ void TextureScene::render()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mTexId);
 
+	if (mSubmitTex)
+	{
+		mSubmitTex = false;
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	}
+
 	glUseProgram(mShaderProgram);
 
-//  glBindVertexArray(mVaoId);
  	glBindBuffer(GL_ARRAY_BUFFER, mBaseVtxBuffer);
  	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBaseVboIndicesBuffer);
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
-//	glUniform1i(mSampleLocation, 0);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
-//	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisableVertexAttribArray(0);
@@ -98,10 +123,7 @@ void TextureScene::exit()
 {
 	Scene::exit();
 
-
-
 }
-
 
 GLuint TextureScene::createSimpleTexture2D()
 {
@@ -109,13 +131,11 @@ GLuint TextureScene::createSimpleTexture2D()
 	GLuint textureId;
 
 	// 2x2 Image, 3 bytes per pixel (R, G, B)
-	GLubyte pixels[4 * 3] =
+
+	for (int i=0; i < width * height *3 ; ++i)
 	{
-		255,   0,   0, // Red
-		0, 255,   0, // Green
-		0,   0, 255, // Blue
-		255, 255,   0  // Yellow
-	};
+		pixels[i] = rand() % 256;
+	}
 
 	// Use tightly packed data
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -127,7 +147,8 @@ GLuint TextureScene::createSimpleTexture2D()
 	glBindTexture(GL_TEXTURE_2D, textureId);
 
 	// Load the texture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
 
 	// Set the filtering mode
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

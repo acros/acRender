@@ -9,6 +9,7 @@ namespace Acros{
 		Directional
 	};
 
+	//TODO: Inherit from AcObject
 	class Light {
 	public:
 		Light(LightType t,const AcVector& dir,const AcColor3& c)
@@ -16,7 +17,7 @@ namespace Acros{
 			, mDir(dir)
 			, mColor(c)
 		{
-			glm::normalize(mDir);
+			mDir = glm::normalize(mDir);
 		}
 
 		LightType getType()const { return mType; }
@@ -24,8 +25,7 @@ namespace Acros{
 		const AcColor3& getColor()const { return mColor; }
 
 		void setDir(const AcVector& dir) { 
-			glm::normalize(mDir);
-			mDir = dir; 
+			mDir = glm::normalize(dir);
 		}
 		void setColor(const AcColor3& c) { mColor = c; }
 

@@ -32,9 +32,7 @@ void AcObject::draw(Renderer& context, Camera* cam, Acros::Light* l)
 {
 	if (mMesh != nullptr)
 	{
-		const AcMatrix& m = mTransform.getModelMat();
-		
-		mMesh->draw(context, cam->getProjMat() * cam->getViewMat() * m,l);
+		mMesh->draw(mTransform,context,cam,l);
 	}
 }
 

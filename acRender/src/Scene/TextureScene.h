@@ -13,6 +13,8 @@ public:
 
 	virtual void enter()override;
 
+	virtual void update(float delta)override;
+
 	virtual void render()override;
 
 	virtual void exit()override;
@@ -20,6 +22,10 @@ public:
 protected:
 
 	GLuint createSimpleTexture2D();
+
+	float	mTexUpdateDuration;
+	float	mTimeAcculation;
+	bool	mSubmitTex;
 
 	GLint mSampleLocation;
 	GLuint mTexId;

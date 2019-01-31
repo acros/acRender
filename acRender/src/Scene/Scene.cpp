@@ -7,6 +7,7 @@
 //
 
 #include "Scene.hpp"
+#include "Base/AcObject.h"
 
 #include "SimpleTriangle.h"
 #include "FboScene.h"
@@ -122,6 +123,7 @@ Scene::Scene(Renderer& render)
 	, mBaseVAO(0)
 	, mBaseVtxBuffer(0)
 	, mBaseVboIndicesBuffer(0)
+	, mDirLight(Acros::Directional, AcVector(1, -1, 1), AcColor3(0.5f, 0.5f, 0.5f))
 {
 
 }
@@ -142,16 +144,29 @@ void Scene::enter()
 
 void Scene::update(float delta)
 {
-    
+	for (int i=0; i < mObjects.size(); ++i)
+	{
+		mObjects[i]->update(delta);
+	}
 }
 
 void Scene::render()
 {
-    
+// 	for (int i=0; i < mObjects.size(); ++i)
+// 	{
+// 		mObjects[i]->draw(mRendererRef, mCam, &mDirLight);
+// 	}
 }
 
 void Scene::exit()
 {
+	for (int i=0; i < mObjects.size(); ++i)
+	{
+		SAFE_DELETE(mObjects[i]);
+	}
+
+	mObjects.clear();
+
     if(mBaseVAO != 0)
 		glDeleteVertexArrays(1, &mBaseVAO);
 	if(mBaseVtxBuffer != 0)

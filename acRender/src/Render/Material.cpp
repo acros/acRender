@@ -31,16 +31,15 @@ void Material::initShader(Renderer& context, ShaderType type)
 	FileManager::loadShaderFile(Frags[type], fragStr);
 	mShaderProgram = context.loadShaderProgram(vertStr, fragStr);
 
-
 	switch (type)
 	{
 	case VertexColor:
 		break;
 	case LightLambert:
-		flag = LightDir | LightColor;
+		mFlag = LightDir | LightColor | WorldMatrix;
 		break;
 	case LightBlinnPhong:
-		flag = LightDir | LightColor | EyePos | Specular;
+		mFlag = LightDir | LightColor | EyePos | Specular | WorldMatrix;
 		break;
 	default:
 		break;
@@ -48,15 +47,21 @@ void Material::initShader(Renderer& context, ShaderType type)
 
 	mMvpLoc = glGetUniformLocation(mShaderProgram, "u_mvpMatrix");
 
-	if (flag | LightDir)
+	if(mFlag | MV)
+		mMvLoc = glGetUniformLocation(mShaderProgram, "u_mvMatrix");
+
+	if (mFlag | WorldMatrix)
+		mWorldMatrixLoc = glGetUniformLocation(mShaderProgram, "u_WorldMatrix");
+
+	if (mFlag | LightDir)
 		mLightDir = glGetUniformLocation(mShaderProgram, "u_light_dir");
 
-	if (flag | LightColor)
+	if (mFlag | LightColor)
 		mLightColor = glGetUniformLocation(mShaderProgram, "u_lightColor");
 
-	if(flag | EyePos)
+	if(mFlag | EyePos)
 		mEyePos = glGetUniformLocation(mShaderProgram, "u_eye_pos");
 
-	if (flag | Specular)
+	if (mFlag | Specular)
 		mSpecularParam = glGetUniformLocation(mShaderProgram, "u_specular");
 }

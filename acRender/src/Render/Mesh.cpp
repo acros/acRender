@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Base/AcUtils.h"
+#include "Camera/Camera.h"
 
 const int POSTITION_LOC = 0;
 const int COLOR_LOC = 1;
@@ -163,12 +164,38 @@ void Mesh::initDraw(Renderer& context)
 	glBindVertexArray(0);
 }
 
-
-void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* light /*=nullptr*/)
+void Mesh::draw(AcTransform& selfTransform, Renderer& context, Camera * cam, const Acros::Light * light)
 {
-	glUseProgram(mMaterial->mShaderProgram);
+	const AcMatrix& m = selfTransform.getModelMat();
+	const AcMatrix& mv = cam->getViewMat() * m;
+	const AcMatrix mvp = cam->getProjMat() * cam->getViewMat() * m;
 
+	glUseProgram(mMaterial->mShaderProgram);
 	glBindVertexArray(mVao);
+
+	int shaderFlag = mMaterial->GetFlag();
+	if (shaderFlag & ShaderFlag::MV)
+	{
+		glUniform4fv(mMaterial->mMvLoc, 1, glm::value_ptr(mv));
+	}
+
+	if (shaderFlag & ShaderFlag::WorldMatrix)
+	{
+		glUniform4fv(mMaterial->mWorldMatrixLoc, 1, glm::value_ptr(m));
+	}
+
+	if (light != nullptr)
+	{
+		if (shaderFlag & ShaderFlag::LightDir){
+			const AcVector& lDir = light->getDir();
+			glUniform4fv(mMaterial->mLightDir, 1, glm::value_ptr(lDir));
+		}
+
+		if (shaderFlag & ShaderFlag::LightColor){
+			const AcColor3& lColor = light->getColor();
+			glUniform4fv(mMaterial->mLightColor, 1, glm::value_ptr(lColor));
+		}
+	}
 
 	if (mShape == ST_ColorTriangle)
 	{
@@ -191,13 +218,7 @@ void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* ligh
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVbo[1]);
 
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-		if (light != nullptr)
-		{
-			const AcVector& lDir = light->getDir();
-			glUniform4fv(mMaterial->mLightDir,1,glm::value_ptr(lDir));
-			const AcColor3& lColor = light->getColor();
-			glUniform4fv(mMaterial->mLightColor, 1, glm::value_ptr(lColor));
-		}
+
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -218,12 +239,6 @@ void Mesh::draw(Renderer& context, const AcMatrix& mvp, const Acros::Light* ligh
 			assert(false);
 
 		glUniformMatrix4fv(mMaterial->mMvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
-		if (light != nullptr)
-		{
-			const AcVector& lDir = light->getDir();
-			glUniformMatrix4fv(mMaterial->mLightDir, 1, GL_FALSE, glm::value_ptr(lDir));
-		}
-
 		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 
 		glDisableVertexAttribArray(POSTITION_LOC);	

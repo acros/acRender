@@ -3,10 +3,7 @@
 LightScene::LightScene(Renderer& renderer)
 	: Scene(renderer)
 	, mCam(nullptr)
-	, mCube(nullptr)
-	, mGround(nullptr)
 	, mCameraMoveTime(0.f)
-	, mDirLight(Acros::Directional,AcVector(1,-1,1),AcColor3(0.5f,0.5f,0.5f))
 {}
 
 LightScene::~LightScene()
@@ -24,22 +21,29 @@ void LightScene::enter()
 	mCam->setViewMat(eyePos, AcVector(0, 0, -3), AcVector(0, 1, 0));
 	const AcMatrix& vieMat = mCam->getViewMat();
 
-	mCube = new AcObject();
+	AcObject* mCube = new AcObject();
 	mCube->setPosition(AcVector(0.0f, 0.f, 0.0f));
-	mCube->rotate(AcVector(0.0f, 1.0f, 0.0f),-15.f);
 	mCube->createShape(ShapeType::ST_Sphere);
 	mCube->initDraw(mRendererRef);
 
+	mObjects.push_back(mCube);
+
+	AcObject* mBlinnSphere = new AcObject();
+	mBlinnSphere->setPosition(AcVector(2.0f, 1.f, 0.0f));
+	mBlinnSphere->createShape(ShapeType::ST_Sphere);
+	mBlinnSphere->initDraw(mRendererRef);
+	mObjects.push_back(mBlinnSphere);
+
 	// Center the ground
-	mGround = new AcObject();
+	AcObject* mGround = new AcObject();
 	AcTransform& transGround = mGround->GetTransform();
 	transGround.setTranslation(AcVector(-5.0f, -1.0f, -5.0f));
 	transGround.setScale(AcVector(10.0f, 10.0f, 10.0f));
 	AcQuat quat = glm::angleAxis(glm::radians(90.0f), AcTransform::VecX);
 	mGround->GetTransform().setRotation(quat);
-
 	mGround->createShape(ShapeType::ST_Plane);
 	mGround->initDraw(mRendererRef);
+	mObjects.push_back(mGround);
 }
 
 void LightScene::update(float delta)
@@ -52,22 +56,21 @@ void LightScene::update(float delta)
 	z *= cos(mCameraMoveTime);
 	mCam->setPosition(AcVector(x,y,z));
 	mCameraMoveTime += (0.5f * delta);
+
+	Scene::update(delta);
 }
 
 void LightScene::render()
 {
-	glUseProgram(0);
-	glClearColor(0.2f, 0.2f, 0.2f, 0.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	mRendererRef.beginDraw();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	Scene::render();
+	for (size_t i = 0; i < mObjects.size(); ++i)
+	{
+		mObjects[i]->draw(mRendererRef, mCam, &mDirLight);
+	}
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	mCube->draw(mRendererRef, mCam,&mDirLight);
-	mGround->draw(mRendererRef, mCam);
+	mRendererRef.endDraw();
 }
 
 void LightScene::exit()
@@ -75,8 +78,6 @@ void LightScene::exit()
 	Scene::exit();
 
 	SAFE_DELETE(mCam);
-	SAFE_DELETE(mCube);
-	SAFE_DELETE(mGround);
 }
 
 #if ACROS_USE_IMGUI

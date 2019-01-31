@@ -13,6 +13,9 @@ enum ShaderFlag
 
 	EyePos =  1 << 3,
 	Specular = 1<<4,
+
+	MV		= 1<<5,
+	WorldMatrix = 1<<6,
 };
 
 enum ShaderType
@@ -30,17 +33,23 @@ public:
 
 	Material()
 		: mMvpLoc(-1)
+		, mMvLoc(-1)
+		, mWorldMatrixLoc(-1)
 		, mShaderProgram(-1)
-		, flag(0)
+		, mFlag(0)
 		, mEyePos(0)
 		, mSpecularParam(0)
 	{}
+
+	int	GetFlag()const { return mFlag; }
 
 	void initShader(Renderer& context, ShaderType type);
 
 	//Shader 
 	AcUint	mShaderProgram;
 	AcInt	mMvpLoc;
+	AcInt	mMvLoc;
+	AcInt	mWorldMatrixLoc;
 
 	GLint	mLightColor;
 	GLint	mLightDir;
@@ -53,7 +62,7 @@ protected:
 	AcColor3	mSpecular;
 
 
-	int		flag;
+	int		mFlag;
 
 	static map<ShaderType, string> Verts;
 	static map<ShaderType, string> Frags;

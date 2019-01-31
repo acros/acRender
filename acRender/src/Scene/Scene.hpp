@@ -11,8 +11,10 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
 #include "Render/Renderer.h"
 #include "Base/AcUtils.h"
+#include "Render/AcLight.h"
 
 using namespace std;
 
@@ -28,7 +30,7 @@ public:
     
     virtual void update(float delta);
     
-    virtual void render() = 0;
+    virtual void render();
     
     virtual void exit();
 
@@ -54,6 +56,9 @@ protected:
 
 	Renderer&	mRendererRef;
 
+	vector<class AcObject*>	mObjects;
+
+	Acros::Light mDirLight;
 
 private:
 	static class Scene*	sShowingScene;

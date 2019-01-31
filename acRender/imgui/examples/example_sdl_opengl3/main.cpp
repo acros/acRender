@@ -162,16 +162,28 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-   
+    Uint32 NOW = SDL_GetTicks();
+    Uint32 LAST = 0;
+    double deltaTime = 0;
+
     Renderer	mRenderer;
-//    Scene* mScene = new TextureScene(mRenderer);
-//    mScene->enter();
 
     mRenderer.checkRendererVersion();
     // Main loop
     bool done = false;
     while (!done)
     {
+        LAST = NOW;
+        NOW = SDL_GetTicks();
+        deltaTime = (double)(NOW - LAST) / 1000;
+
+#if _DEBUG
+        while(deltaTime > 1)
+        {
+            deltaTime = 0.1f;
+        }
+#endif 
+
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -242,13 +254,6 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         mRenderer.setViewport((int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        float frate = io.Framerate;
-        float deltaTime = 0.0;
-        if (frate > 0)
-        {
-            deltaTime = 1 / frate;
-        }
-
         Scene::UpdateScene(mRenderer);
         Scene::GetScene()->update(deltaTime);
         Scene::GetScene()->render();
