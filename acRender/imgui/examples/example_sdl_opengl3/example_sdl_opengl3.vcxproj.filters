@@ -29,6 +29,15 @@
     <Filter Include="acRender\File">
       <UniqueIdentifier>{bd5c4257-eace-4b39-8ad5-1eeb63c8be56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="acRender\Model">
+      <UniqueIdentifier>{8e0f0b60-2d3f-4e34-bb97-5b877c95d18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{3269a5bc-959c-42fc-bf96-69417b210eb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\TinyPLY">
+      <UniqueIdentifier>{6eebc42c-5b0a-48cd-8dd7-ceb4d2737e50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\imgui.cpp">
@@ -102,6 +111,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\AcWorld.cpp">
       <Filter>acRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\3rd\tinyply\example.cpp">
+      <Filter>external\TinyPLY</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\3rd\tinyply\tinyply.cpp">
+      <Filter>external\TinyPLY</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Scene\CommonScene.cpp">
+      <Filter>acRender\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +196,12 @@
       <Filter>acRender</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\Scene.hpp">
+      <Filter>acRender\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\3rd\tinyply\tinyply.h">
+      <Filter>external\TinyPLY</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Scene\CommonScene.h">
       <Filter>acRender\Scene</Filter>
     </ClInclude>
   </ItemGroup>

@@ -34,6 +34,8 @@ namespace Acros
 		void createShape(ShapeType	shape);
 		void createShape(ShapeType	shape,ShaderType shader);
 
+		void loadMesh(const string& fileName,ShaderType shader);
+
 	#if ACROS_USE_IMGUI
 		virtual void drawImgui();
 	#endif

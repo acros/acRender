@@ -20,6 +20,7 @@ namespace Acros
 		, indices(nullptr)
 		, normals(nullptr)
 		, colors(nullptr)
+		, coords(nullptr)
 		, mBufferStride(0)
 		, indexSize(0)
 		, mMaterial(nullptr)
@@ -48,8 +49,28 @@ namespace Acros
 		SAFE_FREE(indices);
 		SAFE_FREE(normals);
 		SAFE_FREE(colors);
+		SAFE_FREE(coords);
 
 		SAFE_DELETE(mMaterial);
+	}
+
+	void Mesh::loadData(ShaderType shader,GLfloat* v,GLint vStride, GLuint* i,int iSize,GLfloat* n,GLfloat* crd)
+	{
+		mShape = ST_Data;
+		mMeshType = MultiBuffer;
+
+		//todo:
+		vertices = v;
+		normals = n;
+		indices = i;
+		coords = crd;
+
+		mBufferStride = vStride;
+		indexSize = iSize;
+
+		if (shader == Invalid)
+			shader = LightLambert;
+		mMaterial = new Material(shader);
 	}
 
 	void Mesh::createTriagle(ShaderType shader)
@@ -185,6 +206,14 @@ namespace Acros
 			glEnableVertexAttribArray(NORMAL_LOC);
 			glVertexAttribPointer(NORMAL_LOC, NORMAL_SIZE, GL_FLOAT, GL_FALSE, NORMAL_SIZE * sizeof(GLfloat), NULL);
 			mPropertySource[NORMAL_LOC] = MeshPropertyDataSource::Buffer;
+		}
+
+		if (coords != nullptr)
+		{
+			//TODO:
+
+
+			mPropertySource[UV_COORD_LOC] = MeshPropertyDataSource::Buffer;
 		}
 	}
 

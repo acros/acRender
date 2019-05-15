@@ -13,7 +13,8 @@ namespace Acros
 		ST_Cube,
 		ST_Plane,
 		ST_ColorTriangle,
-		ST_Sphere
+		ST_Sphere,
+		ST_Data
 	};
 
 

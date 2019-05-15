@@ -2,6 +2,7 @@
 #include "Render/Mesh.h"
 #include "Render/AcLight.h"
 #include "Camera/Camera.h"
+#include "File/AcFileManager.h"
 
 namespace Acros
 {
@@ -68,6 +69,15 @@ namespace Acros
 			assert(false);
 			break;
 		}
+
+	}
+
+	void AcObject::loadMesh(const string & fileName, ShaderType shader)
+	{
+		if (mMesh != nullptr)
+			SAFE_DELETE(mMesh);
+
+		mMesh = Acros::FileManager::LoadModelPlyFile(fileName);
 
 	}
 
