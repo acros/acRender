@@ -26,6 +26,8 @@ const string ShaderPath = "res/shader/desktop/";
 const string ShaderPath = "res/shader/mobile/";
 #endif
 
+const string ModelPath = "res/assets/";
+
 namespace Acros {
 	int FileManager::loadStringFromFile(const string& fileName, string & content)
 	{
@@ -84,10 +86,12 @@ namespace Acros {
 
 	Mesh* FileManager::LoadModelPlyFile(const string & shaderFile)
 	{
+		Mesh* m = new Mesh();
+
 		try
 		{
 			string prefix = SDL_GetBasePath();
-			string fullName = prefix + ShaderPath + shaderFile;
+			string fullName = prefix + ModelPath + shaderFile;
 
 			std::ifstream ss(fullName, std::ios::binary);
 			if (ss.fail()) throw std::runtime_error("failed to open " + fullName);
@@ -138,34 +142,41 @@ namespace Acros {
 			if (faces) std::cout << "\tRead " << faces->count << " total faces (triangles) " << std::endl;
 
 			// type casting to your own native types - Option A
-			{
-				const size_t numVerticesBytes = vertices->buffer.size_bytes();
-				assert(vertices->t == Type::FLOAT32);
-				int vertsCount = numVerticesBytes / sizeof(float);
-				float* verts = (float*)malloc(sizeof(float) * vertsCount);
-				std::memcpy(verts, vertices->buffer.get(), numVerticesBytes);
 
+			const size_t numVerticesBytes = vertices->buffer.size_bytes();
+			assert(vertices->t == Type::FLOAT32);
+			int vertsCount = numVerticesBytes / sizeof(float);
+			float* verts = (float*)malloc(sizeof(float) * vertsCount);
+			std::memcpy(verts, vertices->buffer.get(), numVerticesBytes);
+
+			const size_t numIndicesBytes = faces->buffer.size_bytes();
+			assert(faces->t == Type::INT32);
+			unsigned indicesCount = numIndicesBytes / sizeof(unsigned int);
+			unsigned int* indices = new unsigned int[indicesCount];
+			std::memcpy(indices, faces->buffer.get(), numIndicesBytes);
+
+			float* norms = nullptr;
+			if (normals)
+			{
 				const size_t numNormalBytes = normals->buffer.size_bytes();
 				assert(normals->t == Type::FLOAT32);
 				int normalCount = numNormalBytes / sizeof(float);
-				float* norms = new float[normalCount];
+				norms = new float[normalCount];
 				std::memcpy(norms, normals->buffer.get(), numNormalBytes);
-
+			}
+			
+			float* texCoords = nullptr;
+			if (texcoords)
+			{
 				const size_t numTexCoordBytes = texcoords->buffer.size_bytes();
 				assert(texcoords->t == Type::FLOAT32);
 				int texCoordCount = numTexCoordBytes / sizeof(float);
-				float* texCoords = new float[texCoordCount];
+				texCoords = new float[texCoordCount];
 				std::memcpy(texCoords, texcoords->buffer.get(), numTexCoordBytes);
-
-				const size_t numIndicesBytes = faces->buffer.size_bytes();
-				assert(faces->t == Type::INT32);
-				unsigned indicesCount = numIndicesBytes / sizeof(unsigned int);
-				unsigned int* indices = new unsigned int[indicesCount];
-				std::memcpy(indices, faces->buffer.get(), numIndicesBytes);
-
-				Mesh* m = new Mesh();
-				m->loadData(Acros::ShaderType::LightBlinnPhong,verts,vertsCount / 3 ,indices,indicesCount ,norms,texCoords);
 			}
+
+			m->loadData(Acros::ShaderType::LightLambert,
+				verts,vertsCount / 3 ,indices,indicesCount ,norms,texCoords);
 			
 			// type casting to your own native types - Option B
 // 			{
@@ -180,6 +191,6 @@ namespace Acros {
 			std::cerr << "Caught tinyply exception: " << e.what() << std::endl;
 		}
 
-		return nullptr;
+		return m;
 	}
 }

@@ -161,7 +161,6 @@ xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E /Y</Comman
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\3rd\tinyply\example.cpp" />
     <ClCompile Include="..\..\..\3rd\tinyply\tinyply.cpp" />
     <ClCompile Include="..\..\..\src\AcWorld.cpp" />
     <ClCompile Include="..\..\..\src\Base\AcObject.cpp" />

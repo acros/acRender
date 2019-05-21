@@ -78,7 +78,6 @@ namespace Acros
 			SAFE_DELETE(mMesh);
 
 		mMesh = Acros::FileManager::LoadModelPlyFile(fileName);
-
 	}
 
 #if ACROS_USE_IMGUI

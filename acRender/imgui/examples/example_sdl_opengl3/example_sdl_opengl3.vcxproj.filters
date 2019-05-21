@@ -112,9 +112,6 @@
     <ClCompile Include="..\..\..\src\AcWorld.cpp">
       <Filter>acRender</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\3rd\tinyply\example.cpp">
-      <Filter>external\TinyPLY</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\3rd\tinyply\tinyply.cpp">
       <Filter>external\TinyPLY</Filter>
     </ClCompile>

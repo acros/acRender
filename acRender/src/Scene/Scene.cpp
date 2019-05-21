@@ -13,11 +13,12 @@
 #include "ParticleScene.h"
 #include "TextureScene.h"
 #include "VertexScene.h"
+#include "CommonScene.h"
 
 namespace Acros {
 
 
-	const string Scene::SceneList[] = { "FBO","Light","Particle","Texture","Vertex Obj" };
+	const string Scene::SceneList[] = { "FBO","Light","Particle","Texture","Vertex Obj","Common" };
 	const int Scene::SceneListLen = sizeof(Scene::SceneList) / sizeof(Scene::SceneList[0]);
 
 	void Scene::renderImgui()
@@ -52,6 +53,9 @@ namespace Acros {
 			break;
 		case 5:
 			newScene = new VertexScene();
+			break;
+		case 6: 
+			newScene = new CommonScene();
 			break;
 		default:
 			assert(false);
