@@ -186,8 +186,8 @@ void read_ply_file(const std::string & filepath)
 
 int main(int argc, char *argv[])
 {
-	write_ply_example("example_cube");
-	//read_ply_file("example_cube-ascii.ply");
-	//read_ply_file("example_cube-binary.ply");
+//	write_ply_example("example_cube");
+//	read_ply_file("example_cube-ascii.ply");
+	read_ply_file("D:\\CodingSpace\\GitRepo\\AcRender\\acRender\\Debug\\res\\assets\\sofa_ascii.ply");
     return EXIT_SUCCESS;
 }

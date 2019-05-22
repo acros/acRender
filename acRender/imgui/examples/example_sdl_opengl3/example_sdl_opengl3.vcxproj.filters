@@ -38,6 +38,12 @@
     <Filter Include="external\TinyPLY">
       <UniqueIdentifier>{6eebc42c-5b0a-48cd-8dd7-ceb4d2737e50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="acRender\Input">
+      <UniqueIdentifier>{bbc1cebc-c0a8-46dc-a573-e6dc41821c7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="acRender\Component">
+      <UniqueIdentifier>{9e4ff5db-00b6-4203-8f66-9564d27f78b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\imgui.cpp">
@@ -117,6 +123,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\Scene\CommonScene.cpp">
       <Filter>acRender\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Input\InputManager.cpp">
+      <Filter>acRender\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Component\ComponentController.cpp">
+      <Filter>acRender\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +212,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\Scene\CommonScene.h">
       <Filter>acRender\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Input\InputManager.h">
+      <Filter>acRender\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Component\ComponentController.h">
+      <Filter>acRender\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

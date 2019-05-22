@@ -10,6 +10,7 @@
 #include "glm\ext.hpp"	// GLM extensions.
 
 typedef glm::mat4 AcMatrix;
+typedef glm::vec2 AcVector2;
 typedef glm::vec3 AcVector;
 typedef glm::vec3 AcColor3;
 typedef glm::vec4 AcVector4;

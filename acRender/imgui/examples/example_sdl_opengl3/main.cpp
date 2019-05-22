@@ -13,7 +13,7 @@
 #include "../include/utils.h"
 
 #include "AcWorld.h"
-#include "Scene/Scene.hpp"
+#include "Input/InputManager.h"
 
 
 /*
@@ -186,6 +186,8 @@ int main(int, char**)
         while (SDL_PollEvent(&event))
         {
             ImGui_ImplSDL2_ProcessEvent(&event);
+            InputManager::GetInstance()->ProcessEvent(&event);
+
             if (event.type == SDL_QUIT)
                 done = true;
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))

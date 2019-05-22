@@ -165,8 +165,10 @@ xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E /Y</Comman
     <ClCompile Include="..\..\..\src\AcWorld.cpp" />
     <ClCompile Include="..\..\..\src\Base\AcObject.cpp" />
     <ClCompile Include="..\..\..\src\Camera\Camera.cpp" />
+    <ClCompile Include="..\..\..\src\Component\ComponentController.cpp" />
     <ClCompile Include="..\..\..\src\esShapes.cpp" />
     <ClCompile Include="..\..\..\src\File\AcFileManager.cpp" />
+    <ClCompile Include="..\..\..\src\Input\InputManager.cpp" />
     <ClCompile Include="..\..\..\src\Math\AcMath.cpp" />
     <ClCompile Include="..\..\..\src\Render\AcLight.cpp" />
     <ClCompile Include="..\..\..\src\Render\Material.cpp" />
@@ -195,7 +197,9 @@ xcopy $(SolutionDIr)..\res   $(SolutionDIr)$(Configuration)\res /D /E /Y</Comman
     <ClInclude Include="..\..\..\src\Base\AcObject.h" />
     <ClInclude Include="..\..\..\src\Base\AcUtils.h" />
     <ClInclude Include="..\..\..\src\Camera\Camera.h" />
+    <ClInclude Include="..\..\..\src\Component\ComponentController.h" />
     <ClInclude Include="..\..\..\src\File\AcFileManager.h" />
+    <ClInclude Include="..\..\..\src\Input\InputManager.h" />
     <ClInclude Include="..\..\..\src\Math\AcMath.h" />
     <ClInclude Include="..\..\..\src\Math\AcTranform.h" />
     <ClInclude Include="..\..\..\src\Render\AcLight.h" />
