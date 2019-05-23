@@ -24,18 +24,22 @@ namespace Acros
 		AcVector eyePos(-100.f, 30.f, 100.f);
 		mCam->setViewMat(eyePos, AcVector(0, 0, -3), AcVector(0, 1, 0));
 		const AcMatrix& vieMat = mCam->getViewMat();
+		mCam->setPosition(AcVector(-5, 0, 5));
+		mCam->setMoveable();
 
 		AcObject* plyModel = new AcObject();
 		plyModel->setPosition(AcVector(0.0f, 0.f, 0.0f));
-		plyModel->loadMesh("sofa.ply", Acros::ShaderType::LightBlinnPhong);
+		plyModel->loadMesh("bunny.ply", Acros::ShaderType::LightBlinnPhong);
+
 
 		mObjects.push_back(plyModel);
 	}
 
 	void CommonScene::update(float delta)
 	{
+		/*
 		//Move the camera around
-		static float k =1.0f;
+		static float k =0.05f;
 		float x = k * -100.f;
 		float y = 0.f;
 		float z = k * 100.f;
@@ -43,8 +47,10 @@ namespace Acros
 		z *= cos(mCameraMoveTime);
 		mCam->setPosition(AcVector(x, y, z));
 		mCameraMoveTime += (0.5f * delta);
+		*/
 
 		Scene::update(delta);
+		mCam->update(delta);
 	}
 
 	void CommonScene::initRender(Renderer& r)

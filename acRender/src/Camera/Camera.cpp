@@ -7,11 +7,13 @@ namespace Acros
 		, mFov(fov)
 		, mNear(nearPlane)
 		, mFar(farPlane)
-		, mLookAt(0.f,0.f,0.f)
+		, mLookAt(0.f,0.f,1.f)
+		, mRight(1,0,0)
 		, mUp (0.0f, 1.0f, 0.0f)
 		, mViewMatDirty(true)
 	{
 		mProjMat = glm::perspective(glm::radians(mFov), mAspect, mNear, mFar);
+
 	}
 
 	Camera::~Camera()
@@ -19,11 +21,7 @@ namespace Acros
 
 	}
 
-	void Camera::update(float delta)
-	{
-		//TODO: Do sth to control the camera
-
-	}
+	
 
 	void Camera::setPersp(float aspect, float fov, float nearPlane, float farPlane)
 	{
@@ -38,8 +36,9 @@ namespace Acros
 	void Camera::setViewMat(const AcVector& pos, const AcVector& target, const AcVector& up)
 	{
 		mTransform.setTranslation(pos);
-		mLookAt = target;
-		mUp = up;
+		mLookAt = glm::normalize(target);
+		mUp = glm::normalize(up);
+		mRight = glm::normalize(glm::cross(mLookAt, mUp));
 		mViewMat = glm::lookAt(mTransform.getTranslation(), mLookAt, mUp);
 		mViewMatDirty = false;
 	}

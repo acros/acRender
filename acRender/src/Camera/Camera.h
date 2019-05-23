@@ -10,7 +10,7 @@ namespace Acros
 		Camera(float aspect, float fov, float nearPlane, float farPlane);
 		~Camera();
 
-		virtual void update(float delta)override;
+//		virtual void update(float delta)override;
 
 		void setPersp(float aspect, float fov, float nearPlane, float farPlane);
 		void setViewMat(const AcVector& pos, const AcVector& target, const AcVector& up);
@@ -20,6 +20,11 @@ namespace Acros
 
 		const float getFov()const { return mFov; }
 
+		//TODO: Wrap in Transform
+		const AcVector& GetForward()const { return mLookAt; }
+		const AcVector& GetRight()const { return mRight; }
+		const AcVector& GetUp()const { return mUp; }
+
 	protected:
 
 		float		mNear;
@@ -28,6 +33,7 @@ namespace Acros
 		float		mAspect;
 
 		AcVector	mLookAt;
+		AcVector	mRight;
 		AcVector	mUp;
 
 		bool		mViewMatDirty;

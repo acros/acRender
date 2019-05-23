@@ -7,7 +7,7 @@ namespace Acros
 	class BaseComponent
 	{
 	public:
-		BaseComponent(AcObject* o) : m_Owner(0){}
+		BaseComponent(AcObject* o) : m_Owner(o){}
 		virtual ~BaseComponent() {
 
 		}
@@ -21,7 +21,7 @@ namespace Acros
 
 
 
-	class ComponentController : BaseComponent
+	class ComponentController : public BaseComponent
 	{
 	public:
 		ComponentController(AcObject* o);

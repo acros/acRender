@@ -2,9 +2,6 @@
 
 #define USE_SDL_INPUT  true
 
-#if USE_SDL_INPUT
-#include <SDL.h>
-#endif
 
 InputManager* InputManager::sInstance = nullptr;
 
@@ -20,8 +17,8 @@ InputManager* InputManager::GetInstance()
 
 void InputManager::ProcessEvent(const void* ev)
 {
-#if USE_SDL_INPUT
-	const SDL_Event*  event = static_cast<const SDL_Event*>(ev);
+#if USE_SDL_INPUT && false
+	const ImGuiIO*  event = static_cast<const ImGuiIO*>(ev);
 
 	m_InputData.clear();
 

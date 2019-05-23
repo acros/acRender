@@ -3,6 +3,7 @@
 #include "Render/AcLight.h"
 #include "Camera/Camera.h"
 #include "File/AcFileManager.h"
+#include "Component/ComponentController.h"
 
 namespace Acros
 {
@@ -16,11 +17,24 @@ namespace Acros
 	{
 		if (mMesh != nullptr)
 			delete mMesh;
+
+		for (size_t i = 0; i < mComps.size(); ++i)
+		{
+			delete mComps[i];
+		}
 	}
 
 	void AcObject::rotate(const AcVector& rotAxis, float angle)
 	{
 		mTransform.setRotation(glm::angleAxis(angle,rotAxis));
+	}
+
+	void AcObject::update(float delta)
+	{
+		for (size_t i = 0; i < mComps.size(); ++i)
+		{
+			mComps[i]->Update(delta);
+		}
 	}
 
 	void AcObject::initDraw(Renderer& context)
@@ -78,6 +92,11 @@ namespace Acros
 			SAFE_DELETE(mMesh);
 
 		mMesh = Acros::FileManager::LoadModelPlyFile(fileName);
+	}
+
+	void AcObject::setMoveable()
+	{
+		mComps.push_back(new ComponentController(this));
 	}
 
 #if ACROS_USE_IMGUI

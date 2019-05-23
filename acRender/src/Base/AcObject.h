@@ -3,6 +3,7 @@
 #include "Render/Renderer.h"
 #include "Base/AcUtils.h"
 #include "Render/Mesh.h"
+#include <vector>
 
 namespace Acros
 {
@@ -23,7 +24,7 @@ namespace Acros
 
 		void rotate(const AcVector& rotAxis, float angle);
 
-		virtual void update(float delta)	{}
+		virtual void update(float delta);
 	
 		void initDraw(Renderer& context);
 		virtual void draw(Renderer& context, class Camera* cam,class Light* l = nullptr);
@@ -36,6 +37,8 @@ namespace Acros
 
 		void loadMesh(const string& fileName,ShaderType shader);
 
+		void setMoveable();
+
 	#if ACROS_USE_IMGUI
 		virtual void drawImgui();
 	#endif
@@ -43,6 +46,8 @@ namespace Acros
 	protected:
 
 		AcTransform mTransform;
+
+		vector<class BaseComponent*> mComps;
 
 		class Mesh* mMesh;
 	};
