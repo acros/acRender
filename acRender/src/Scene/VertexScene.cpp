@@ -27,7 +27,8 @@ namespace Acros
 		//Set camera 
 		mCam = new Camera(1280 / 720.f, 45, 1.f, 1000.f);
 		AcVector eyePos(0.f, 0.f, -5.f);
-		mCam->setViewMat(eyePos, AcVector(0), AcVector(0, 1, 0));
+		mCam->setViewMat(eyePos, AcVector(0), AcVector(0, 1, 0));
+
 		mObj = new AcObject();
 		mObj->createShape(ST_ColorTriangle);
 	}

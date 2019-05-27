@@ -186,7 +186,7 @@ int main(int, char**)
         while (SDL_PollEvent(&event))
         {
             ImGui_ImplSDL2_ProcessEvent(&event);
-            InputManager::GetInstance()->ProcessEvent(&event);
+            Acros::InputManager::GetInstance()->ProcessEvent(&event);
 
             if (event.type == SDL_QUIT)
                 done = true;

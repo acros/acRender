@@ -3,50 +3,54 @@
 #include <memory>
 #include "Math/AcMath.h"
 
-struct InputData
+namespace Acros
 {
-public:
-
-	AcVector2	DeltaMouseMove;
-
-	bool MousePressed[3];
-
-	bool        KeyCtrl_L;
-	bool        KeyShift_L;
-	bool        KeyAlt_L;
-
-	bool        KeysDown[512];
-
-	void clear()
+	struct InputData
 	{
-		MousePressed[0] = false;
-		MousePressed[1] = false;
-		MousePressed[2] = false;
-		KeyCtrl_L = KeyAlt_L = KeyShift_L = false;
+	public:
 
-		DeltaMouseMove.x = -1;
-		DeltaMouseMove.y = -1;
+		AcVector2	DeltaMouseMove;
 
-		memset(KeysDown, 0, sizeof(bool) * 512);
-	}
-};
+		bool MousePressed[3];
+
+		bool        KeyCtrl_L;
+		bool        KeyShift_L;
+		bool        KeyAlt_L;
+
+		bool        KeysDown[512];
+
+		void clear()
+		{
+			MousePressed[0] = false;
+			MousePressed[1] = false;
+			MousePressed[2] = false;
+			KeyCtrl_L = KeyAlt_L = KeyShift_L = false;
+
+			DeltaMouseMove.x = 0;
+			DeltaMouseMove.y = 0;
+
+			memset(KeysDown, 0, sizeof(bool) * 512);
+		}
+	};
 
 
-class InputManager
-{
-private:
-	static InputManager* sInstance;
-	InputManager();
-	~InputManager();
+	class InputManager
+	{
+	private:
+		static InputManager* sInstance;
+		InputManager();
+		~InputManager();
 
-public:
-	static InputManager* GetInstance();
+	public:
+		static InputManager* GetInstance();
 
-	void ProcessEvent(const void* ev);
+		void ProcessEvent(const void* ev);
 
-	const InputData& GetInputData()const { return m_InputData; }
+		const InputData& GetInputData()const { return m_InputData; }
 
-private:
-	InputData		m_InputData;
-};
+	private:
+		InputData		m_InputData;
+	};
+
+}
 

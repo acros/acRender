@@ -20,8 +20,8 @@ namespace Acros
 		Scene::enter();
 
 		//Set camera 
-		mCam = new Camera(1280 / 720.f, 60.f, 1.f, 100000.f);
-		AcVector eyePos(-100.f, 30.f, 100.f);
+		mCam = new Camera(1280 / 720.f, 60.f, 1.f, 1000.f);
+		AcVector eyePos(-100.f, 0.f, 100.f);
 		mCam->setViewMat(eyePos, AcVector(0, 0, -3), AcVector(0, 1, 0));
 		const AcMatrix& vieMat = mCam->getViewMat();
 		mCam->setPosition(AcVector(-5, 0, 5));
